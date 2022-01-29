@@ -1,10 +1,5 @@
-from shutil import move
-from game_state import INITIAL_BOARD_STATE
 import pygame
-import time
-import sys
-
-import game_state 
+from game_state import game_state, INITIAL_BOARD_STATE
 
 
 WIDTH, HEIGHT = 500, 500
@@ -13,7 +8,7 @@ WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Chess")
 
 # Colors
-WHITE = (241, 254, 198)
+WHITE = (241, 254, 198) 
 GRAY = (100, 100, 100)
 BLACK = (84, 106, 118)
 
@@ -57,7 +52,6 @@ def load_pieces():
         IMAGES[piece] = pygame.transform.scale(pygame.image.load('images/' + piece + ".png"), (SQUARE_SIZE, SQUARE_SIZE))
         
 def draw_piece():
-    INITIAL_BOARD_STATE = game_state.INITIAL_BOARD_STATE
     for i in range(len(INITIAL_BOARD_STATE)):
         piece = INITIAL_BOARD_STATE[i]
         if piece != '--':
