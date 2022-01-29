@@ -8,7 +8,6 @@ class Piece(ABC):
 
     def __str__(self):
         return self.symbol
-
     
     def legal_moves(self):
         NotImplemented()

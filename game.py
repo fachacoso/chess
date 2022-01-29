@@ -1,16 +1,16 @@
 import pygame
-from game_state import game_state, INITIAL_BOARD_STATE
+from game_state import GameState, INITIAL_BOARD_STATE
 
 
-WIDTH, HEIGHT = 500, 500
+WIDTH, HEIGHT = 1000, 1000
 SQUARE_SIZE = WIDTH // 8
 WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Chess")
 
 # Colors
-WHITE = (241, 254, 198) 
+WHITE = (145, 130, 109) 
 GRAY = (100, 100, 100)
-BLACK = (84, 106, 118)
+BLACK = (108,82,59)
 
 ROWS = COLS = 8
 
@@ -49,7 +49,7 @@ IMAGES = {}
 def load_pieces():
     pieces = ['bP', 'bR', 'bN', 'bK', 'bB', 'bQ', 'bK', 'wP', 'wR', 'wN', 'wK', 'wB', 'wQ', 'wK']
     for piece in pieces:
-        IMAGES[piece] = pygame.transform.scale(pygame.image.load('images/' + piece + ".png"), (SQUARE_SIZE, SQUARE_SIZE))
+        IMAGES[piece] = pygame.transform.scale(pygame.image.load('images/' + piece + ".png").convert_alpha(), (SQUARE_SIZE, SQUARE_SIZE))
         
 def draw_piece():
     for i in range(len(INITIAL_BOARD_STATE)):

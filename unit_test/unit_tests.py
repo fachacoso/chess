@@ -13,8 +13,6 @@ class TestBasicMovement(unittest.TestCase):
     
     def test_mov(self):
         test_state = GameState()
-        print(len(str(test_state.board)))
-        print(len(str(test_board)))
         self.assertEqual(str(test_state.board), test_board)
         test_state.board.move(8, 16)
         self.assertEqual(str(test_state.board), test_board_1)
