@@ -9,9 +9,6 @@ class Piece(ABC):
     def __str__(self):
         return self.symbol
     
-    def legal_moves(self):
-        NotImplemented()
-    
 class Pawn(Piece):
     piece_value = 1
     def __init__(self, index, player):
@@ -22,6 +19,9 @@ class Pawn(Piece):
         else:
             self.symbol = "♟︎"
             self.value = -self.piece_value
+            
+    def __str__(self):
+        return self.player + 'P'
     
 class Rook(Piece):
     piece_value = 5
@@ -33,6 +33,9 @@ class Rook(Piece):
         else:
             self.symbol = "♜"
             self.value = -self.piece_value
+            
+    def __str__(self):
+        return self.player + 'R'
 
 class Knight(Piece):
     piece_value = 3
@@ -44,6 +47,9 @@ class Knight(Piece):
         else:
             self.symbol = "♞"
             self.value = -self.piece_value
+            
+    def __str__(self):
+        return self.player + 'N'
 
 class Bishop(Piece):
     piece_value = 3
@@ -55,6 +61,9 @@ class Bishop(Piece):
         else:
             self.symbol = "♝"
             self.value = -self.piece_value
+    
+    def __str__(self):
+        return self.player + 'B'
 
 class Queen(Piece):
     piece_value = 8
@@ -66,6 +75,9 @@ class Queen(Piece):
         else:
             self.symbol = "♛"
             self.value = -self.piece_value
+            
+    def __str__(self):
+        return self.player + 'Q'
 
 class King(Piece):
     piece_value = 999
@@ -77,3 +89,6 @@ class King(Piece):
         else:
             self.symbol = "♚"
             self.value = -self.piece_value
+    
+    def __str__(self):
+        return self.player + 'K'

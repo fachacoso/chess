@@ -25,15 +25,18 @@ class GameState:
         
     def is_game_over(self):
         self.board
-        
-    def move(self, start, end):
-        piece = self.board.board_pos[start]
-        self.board.board_pos[end] = piece
-        self.board.board_pos[start] = '--'
-        self.move_history.append(move(self.turn, start, end))
+    
+    # Moves piece in start_index to end_index, appends move to move_history, changes index of piece
+    def move(self, start_index, end_index):
+        piece = self.board.board_pos[start_index]
+        self.board.board_pos[end_index] = piece
+        piece.index = end_index
+        self.board.board_pos[start_index] = '-'
+        self.move_history.append(move(self.turn, start_index, end_index))
 
 class move:
-    def __init__(self, start, end):
+    def __init__(self, turn, start, end):
+        self.turn = turn
         self.start = start
         self.end = end     
         
