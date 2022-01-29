@@ -2,13 +2,27 @@
 from abc import ABC
 from codecs import BOM_BE
 
+INITIAL_BOARD_STATE = [
+ 'bR', 'bN', 'bB', 'bB', 'bQ', 'bK', 'bN', 'bR',
+ 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 
+ '--', '--', '--', '--', '--', '--', '--', '--', 
+ '--', '--', '--', '--', '--', '--', '--', '--', 
+ '--', '--', '--', '--', '--', '--', '--', '--', 
+ '--', '--', '--', '--', '--', '--', '--', '--', 
+ 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP',
+ 'wR', 'wN', 'wB', 'wB', 'wQ', 'wK', 'wN', 'wR'
+]
+
 
 class game_state:
     
     # Player with current turn - (W)hite or (B)lack
     turn = "W"
-    turn_counter = 1
+    turn_counter = 0
+    history_counter = 0
     move_history = []
+    highlight = {}
+    
 
     def __init__(self):
         self.board = board()
@@ -28,38 +42,41 @@ class move:
         
 # Class for chess board
 class board:
+    
     def __init__(self):
+        self.captured_stack = []
         self.board_pos = ['-'] * 64
-        self.board_pos[0] = rook(0, "W")
-        self.board_pos[1] = knight(1, "W")
-        self.board_pos[2] = bishop(2, "W")
-        self.board_pos[3] = queen(3, "W")
-        self.board_pos[4] = king(4, "W")
-        self.board_pos[5] = bishop(5, "W")
-        self.board_pos[6] = knight(6, "W")
-        self.board_pos[7] = rook(7, "W")
-        for i in range(8, 16):
-            self.board_pos[i] = pawn(i, "W")
-        for i in range(48, 56):
-            self.board_pos[i] = pawn(i, "B")
-        self.board_pos[56] = rook(56, "B")
-        self.board_pos[57] = knight(57, "B")
-        self.board_pos[58] = bishop(58, "B")
-        self.board_pos[59] = queen(59, "B")
-        self.board_pos[60] = king(60, "B")
-        self.board_pos[61] = bishop(61, "B")
-        self.board_pos[62] = knight(62, "B")
-        self.board_pos[63] = rook(63, "B")
-            
+        for i in range(64):
+            if i == '-':
+                self.board_pos[i] = INITIAL_BOARD_STATE[i]
+            else:
+                player = INITIAL_BOARD_STATE[i][0]
+                type = INITIAL_BOARD_STATE[i][1]
+                if type == 'P':
+                    self.board_pos[i] = pawn(i, player)
+                elif type == 'R':
+                    self.board_pos[i] = rook(i, player)
+                elif type == 'N':
+                    self.board_pos[i] = knight(i, player)
+                elif type == 'B':
+                    self.board_pos[i] = bishop(i, player)
+                elif type == 'Q':
+                    self.board_pos[i] = queen(i, player)
+                elif type == 'K':
+                    self.board_pos[i] = king(i, player)
+                
 
     def __repr__(self):
-        board_pos_copy = self.board_pos
-        stack = []
         string = ""
+        """    
+        stack = []
+        #CODE FOR BLACK SIDE    
         for i in range(8):
             stack.append(board_pos_copy[i * 8 : (i+1) * 8])
+        stack.pop()
+        """
         for i in range(8):
-            string += " ".join([str(x) for x in stack.pop()])
+            string += " ".join([str(x) for x in self.board_pos[i * 8 : (i + 1) * 8]])
             string += "\n"
         return string
     
@@ -85,7 +102,7 @@ class pawn(piece):
     piece_value = 1
     def __init__(self, index, player):
         super().__init__(index, player)
-        if self.player == "W":
+        if self.player == "w":
             self.symbol = "♙"
             self.value = self.piece_value
         else:
@@ -96,7 +113,7 @@ class rook(piece):
     piece_value = 5
     def __init__(self, index, player):
         super().__init__(index, player)
-        if self.player == "W":
+        if self.player == "w":
             self.symbol = "♖"
             self.value = self.piece_value
         else:
@@ -107,7 +124,7 @@ class knight(piece):
     piece_value = 3
     def __init__(self, index, player):
         super().__init__(index, player)
-        if self.player == "W":
+        if self.player == "w":
             self.symbol = "♘"
             self.value = self.piece_value
         else:
@@ -118,7 +135,7 @@ class bishop(piece):
     piece_value = 3
     def __init__(self, index, player):
         super().__init__(index, player)
-        if self.player == "W":
+        if self.player == "w":
             self.symbol = "♗"
             self.value = self.piece_value
         else:
@@ -129,7 +146,7 @@ class queen(piece):
     piece_value = 8
     def __init__(self, index, player):
         super().__init__(index, player)
-        if self.player == "W":
+        if self.player == "w":
             self.symbol = "♕"
             self.value = self.piece_value
         else:
@@ -140,7 +157,7 @@ class king(piece):
     piece_value = 999
     def __init__(self, index, player):
         super().__init__(index, player)
-        if self.player == "W":
+        if self.player == "w":
             self.symbol = "♔"
             self.value = self.piece_value
         else:
