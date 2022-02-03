@@ -1,16 +1,5 @@
 from pieces import Pawn, Rook, Knight, Bishop, Queen, King
-
-INITIAL_BOARD_STATE = [
- 'bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR',
- 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP',
- '--', '--', '--', '--', '--', '--', '--', '--',
- '--', '--', '--', '--', '--', '--', '--', '--',
- '--', '--', '--', '--', '--', '--', '--', '--',
- '--', '--', '--', '--', '--', '--', '--', '--',
- 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP',
- 'wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR'
-]
-SQUARE_COUNT = 64
+from constants import *
 
 # Class for chess game session
 class GameState:

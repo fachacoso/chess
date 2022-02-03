@@ -74,25 +74,25 @@ def update_view(game_state, selected, mouse_pos):
     initialize_board()
     for i in range(SQUARE_COUNT):
 
-        # Skip drawing piece selected
+        # Skip drawing piece selected/being held
         if selected:
             if i == selected.index:
                 continue
 
         square = get_square(game_state, i)
-
         if is_piece(square):
             piece = repr(square)
             img = IMAGES[piece]
             WINDOW.blit(img, (get_X(i) * SQUARE_SIZE, get_Y(i) * SQUARE_SIZE))
 
-    # Draw selected piece
+    # Draw selected/held piece on top of board and pieces
     if selected:
         piece = repr(selected)
         selected_img = IMAGES[piece]
         WINDOW.blit(selected_img, (numpy.subtract(mouse_pos, (SQUARE_SIZE / 2, SQUARE_SIZE / 2))))
 
 
+# Helper functions
 def get_square(game_state, index):
     return game_state.board.board_pos[index]
 
