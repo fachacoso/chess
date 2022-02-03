@@ -1,133 +1,113 @@
 import pygame
 import numpy
 from game_state import GameState, INITIAL_BOARD_STATE
+from constants import *
 
-
-WIDTH, HEIGHT = 1000, 1000
-SQUARE_COUNT = 64
-SQUARE_SIZE = WIDTH // 8
-WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
+WINDOW = pygame.display.set_mode((BOARD_SIZE, BOARD_SIZE))
 pygame.display.set_caption("Chess")
 
 # Colors
-WHITE = (145, 130, 109) 
-GRAY = (100, 100, 100)
-BLACK = (108,82,59)
-
-ROWS = COLS = 8
+LIGHT = (145, 130, 109)
+DARK = (108,82,59)
 
 
 def main():
     pygame.init()
-    WINDOW.fill(GRAY)
     load_pieces()
     game_state = GameState()
+
+    # Game loop
     selected_piece = None
-    
-    
-    
     run = True
     while run:
         for e in pygame.event.get():
+            # Quits game
             if e.type == pygame.QUIT:
-                run = False 
-            #mouse listening
+                run = False
+            # Mouse listening
             mouse_pos = pygame.mouse.get_pos()
             index_hovered = get_index(mouse_pos)
             square_hovered = get_square(game_state, index_hovered)
-            left_click = pygame.mouse.get_pressed()[0]
             if e.type == pygame.MOUSEBUTTONDOWN:
-                # If clicked on occupied square (NEED TO ADD PLAYER CHECK)
-                if get_type(square_hovered) != '-':
+                # If clicked on occupied square, hold selected piece (NEED TO ADD PLAYER CHECK)
+                if is_piece(square_hovered):
                         reset_square(index_hovered)
                         selected_piece = get_square(game_state, index_hovered)
 
+            # Lets go of piece
             if e.type == pygame.MOUSEBUTTONUP and selected_piece:
-                if index_hovered != selected_piece.index:       
+                if index_hovered != selected_piece.index:
                     game_state.move(selected_piece.index, index_hovered)
                 selected_piece = None
-            
-            
-                    
+
+
+        # Updates each frame
         update_view(game_state, selected_piece, mouse_pos)
         pygame.display.update()
-        
-        
-    pygame.display.quit()  
+
+
+    pygame.display.quit()
     pygame.quit()
     exit()
-        
-        
+
+
+# Creates board
 def initialize_board():
-    for i in range(64):
+    for i in range(SQUARE_COUNT):
         reset_square(i)
-        
+
+# Redraws an empty square
 def reset_square(index):
-    white_square = (index % 2 == 0) == ((index // 8) % 2 == 0)
-    pygame.draw.rect(WINDOW, WHITE if white_square else BLACK, pygame.Rect(square_by_index(index)))
-    
-    
-    
+    light_square = (index % 2 == 0) == ((index // 8) % 2 == 0)
+    pygame.draw.rect(WINDOW, LIGHT if light_square else DARK, pygame.Rect(square_by_index(index)))
+
+
+
 IMAGES = {}
+# Load all .png's of pieces
 def load_pieces():
     pieces = ['bP', 'bR', 'bN', 'bK', 'bB', 'bQ', 'bK', 'wP', 'wR', 'wN', 'wK', 'wB', 'wQ', 'wK']
     for piece in pieces:
         IMAGES[piece] = pygame.transform.scale(pygame.image.load('images/' + piece + ".png").convert_alpha(), (SQUARE_SIZE, SQUARE_SIZE))
-        
+
 def update_view(game_state, selected, mouse_pos):
     initialize_board()
     for i in range(SQUARE_COUNT):
-        piece = get_type(get_square(game_state, i))
-        
+
         # Skip drawing piece selected
         if selected:
             if i == selected.index:
                 continue
-        
-        if piece != '-':
+
+        square = get_square(game_state, i)
+
+        if is_piece(square):
+            piece = repr(square)
             img = IMAGES[piece]
-            WINDOW.blit(img, (getX(i) * SQUARE_SIZE, getY(i) * SQUARE_SIZE))
-            
-    # Draw selected piece board+pieces
+            WINDOW.blit(img, (get_X(i) * SQUARE_SIZE, get_Y(i) * SQUARE_SIZE))
+
+    # Draw selected piece
     if selected:
-        piece = str(selected)
+        piece = repr(selected)
         selected_img = IMAGES[piece]
         WINDOW.blit(selected_img, (numpy.subtract(mouse_pos, (SQUARE_SIZE / 2, SQUARE_SIZE / 2))))
-            
-            
-def mouseClick():
-    NotImplemented
 
-                
-                
+
 def get_square(game_state, index):
     return game_state.board.board_pos[index]
 
-def get_type(square):
-    return str(square)
-    
-    
-                   
-            
-            
-    
-    
-def selectPiece():
-    NotImplemented
-        
-"""def move_piece(index, piece):
-    img = IMAGES[piece]
-    pygame.blit(img, getX(index), getY(index))"""
+def is_piece(square):
+    return str(square) != '-'
 
-def getX(index):
-    return index % COLS
+def get_X(index):
+    return index % 8
 
-def getY(index):
-    return index // ROWS
-    
+def get_Y(index):
+    return index // 8
+
 def square_by_index(index):
-    x = getX(index)
-    y = getY(index)
+    x = get_X(index)
+    y = get_Y(index)
     x_start = x * SQUARE_SIZE
     y_start = y * SQUARE_SIZE
     x_end = y_end = SQUARE_SIZE
@@ -135,11 +115,11 @@ def square_by_index(index):
 
 def get_index(coordinate):
     col = coordinate[0] // SQUARE_SIZE
-    row = coordinate[1] // SQUARE_SIZE 
+    row = coordinate[1] // SQUARE_SIZE
     index = col + row * 8
     return index
 
 def update_highlight():
     NotImplemented
-    
+
 main()
