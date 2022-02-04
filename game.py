@@ -2,13 +2,14 @@ import pygame
 import numpy
 from game_state import GameState, INITIAL_BOARD_STATE
 from constants import *
+from utils import *
 
 WINDOW = pygame.display.set_mode((BOARD_SIZE, BOARD_SIZE))
 pygame.display.set_caption("Chess")
 
 # Colors
 LIGHT = (145, 130, 109)
-DARK = (108,82,59)
+DARK = (108, 82, 59)
 
 
 def main():
@@ -93,18 +94,6 @@ def update_view(game_state, selected, mouse_pos):
 
 
 # Helper functions
-def get_square(game_state, index):
-    return game_state.board.board_pos[index]
-
-def is_piece(square):
-    return str(square) != '-'
-
-def get_X(index):
-    return index % 8
-
-def get_Y(index):
-    return index // 8
-
 def square_by_index(index):
     x = get_X(index)
     y = get_Y(index)
@@ -118,6 +107,7 @@ def get_index(coordinate):
     row = coordinate[1] // SQUARE_SIZE
     index = col + row * 8
     return index
+
 
 def update_highlight():
     NotImplemented

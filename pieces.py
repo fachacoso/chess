@@ -1,10 +1,25 @@
 from abc import ABC, abstractmethod
+from movement import legal_moves
 
 # Class for each chess piece
 class Piece(ABC):
     def __init__(self, index, player):
         self.index = index
         self.player = player
+        self.move_counter = 0
+        
+    def has_not_moved(self):
+        if self.move_counter > 0:
+            return False
+        return True
+    
+    def move(self, new_index):
+        self.index = new_index
+        self.move_counter += 1
+        
+    def undo_move(self, old_index):
+        self.index = old_index
+        self.move_counter -= 1
 
     def __str__(self):
         return self.symbol
@@ -44,6 +59,7 @@ class Rook(Piece):
         else:
             self.symbol = "♜"
             self.value = -self.piece_value
+        self.has_moved = False
 
 class Knight(Piece):
     piece_value = 3

@@ -1,9 +1,10 @@
 from pieces import Pawn, Rook, Knight, Bishop, Queen, King
 from constants import *
+from movement import legal_moves
 
 # Class for chess game session
 class GameState:
-    turn = "W"
+    turn = "w"
     turn_counter = 0
     history_counter = 0
     move_history = []
@@ -16,16 +17,31 @@ class GameState:
     def is_game_over(self):
         NotImplemented()
 
+
+    def is_legal_move(self, start_index, end_index):
+        return end_index in legal_moves(self, start_index)
+
+    
     # Moves piece in start_index to end_index, appends move to move_history, changes index of piece
     def move(self, start_index, end_index):
+        if not self.is_legal_move(start_index, end_index):
+            print('Illegal Move')
+            return
+            
         piece = self.board.board_pos[start_index]
         captured = None
         if self.board.board_pos[end_index] != '-':
             captured = self.board.board_pos[end_index]
         self.board.board_pos[end_index] = piece
-        piece.index = end_index
+        piece.move(end_index)
         self.board.board_pos[start_index] = '-'
         self.move_history.append(move(self.turn, start_index, end_index, captured))
+        if self.turn == 'w':
+            self.turn = 'b'
+        else:
+            self.turn = 'w'
+        self.turn_counter += 1
+        
 
 # Class for chess board
 class Board:
@@ -54,14 +70,10 @@ class Board:
     # String representation of board used for debugging
     def __str__(self):
         string = "\n"
-        for i in range(8):
+        for i in range(RANK):
             string += " ".join([str(x) for x in self.board_pos[i * 8 : (i + 1) * 8]])
             string += "\n"
         return string
-
-    def move(self, start, end):
-        self.board_pos[end] = self.board_pos[start]
-        self.board_pos[start] = "-"
 
 # Class used to record each move
 class move:
