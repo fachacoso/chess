@@ -1,17 +1,18 @@
 from abc import ABC, abstractmethod
-from movement import legal_moves
 
 # Class for each chess piece
 class Piece(ABC):
+
     def __init__(self, index, player):
         self.index = index
         self.player = player
         self.move_counter = 0
+        self.type = None
         
-    def has_not_moved(self):
+    def has_moved(self):
         if self.move_counter > 0:
-            return False
-        return True
+            return True
+        return False
     
     def move(self, new_index):
         self.index = new_index
@@ -21,90 +22,47 @@ class Piece(ABC):
         self.index = old_index
         self.move_counter -= 1
 
+    # Unicode representation
     def __str__(self):
-        return self.symbol
+        return UNICODE_SYMBOLS[self.player + self.notation]
 
+    # FEN notation
     def __repr__(self):
-        return self.player + self.notation
-
-# index (int) - index of piece on board
-# player (str) - (w)hite or (b)lack
-# symbol (str) - unicode symbol of piece (ex. ♙, ♜, ♘)
-# notation (str) - representative letter of piece (ex. R, B, N)
-
-# __str__ (str) - calls symbol for debugging
-# __repr__ (str) - letter representation of player and piece (ex. wP, wR, bN, bB )
-
+        if self.player == 'w':
+            return self.notation
+        else:
+            return self.notation.lower()
+    
 
 class Pawn(Piece):
-    piece_value = 1
-    def __init__(self, index, player):
-        super().__init__(index, player)
-        self.notation = 'P'
-        if self.player == "w":
-            self.symbol = "♙"
-            self.value = self.piece_value
-        else:
-            self.symbol = "♟︎"
-            self.value = -self.piece_value
+    notation = 'P'
 
 class Rook(Piece):
-    piece_value = 5
-    def __init__(self, index, player):
-        super().__init__(index, player)
-        self.notation = 'R'
-        if self.player == "w":
-            self.symbol = "♖"
-            self.value = self.piece_value
-        else:
-            self.symbol = "♜"
-            self.value = -self.piece_value
-        self.has_moved = False
+    notation = 'R'
 
 class Knight(Piece):
-    piece_value = 3
-    def __init__(self, index, player):
-        super().__init__(index, player)
-        self.notation = 'N'
-        if self.player == "w":
-            self.symbol = "♘"
-            self.value = self.piece_value
-        else:
-            self.symbol = "♞"
-            self.value = -self.piece_value
+    notation = 'N'
 
 class Bishop(Piece):
-    piece_value = 3
-    def __init__(self, index, player):
-        super().__init__(index, player)
-        self.notation = 'B'
-        if self.player == "w":
-            self.symbol = "♗"
-            self.value = self.piece_value
-        else:
-            self.symbol = "♝"
-            self.value = -self.piece_value
+    notation = 'B'
 
 class Queen(Piece):
-    piece_value = 8
-    def __init__(self, index, player):
-        super().__init__(index, player)
-        self.notation = 'Q'
-        if self.player == "w":
-            self.symbol = "♕"
-            self.value = self.piece_value
-        else:
-            self.symbol = "♛"
-            self.value = -self.piece_value
+    notation = 'Q'
 
 class King(Piece):
-    piece_value = 999
-    def __init__(self, index, player):
-        super().__init__(index, player)
-        self.notation = 'K'
-        if self.player == "w":
-            self.symbol = "♔"
-            self.value = self.piece_value
-        else:
-            self.symbol = "♚"
-            self.value = -self.piece_value
+    notation = 'K'
+    
+UNICODE_SYMBOLS = {
+                    'wP':'♙',
+                    'wR':'♖',
+                    'wN':'♘',
+                    'wB':'♗',
+                    'wQ':'♕',
+                    'wK':'♔',                         
+                    'bP':'♟︎',
+                    'bR':'♜',
+                    'bN':'♞',
+                    'bB':'♝',
+                    'bQ':'♛',
+                    'bK':'♚'
+                    }
