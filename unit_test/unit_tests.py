@@ -11,17 +11,21 @@ from test_boards import *
 
 class TestBasicMovement(unittest.TestCase):
     
-    def test_mov(self):
+    def test_FEN(self):
         test_state = GameState()
-        self.assertEqual(str(test_state.board), test_board)
-        test_state.move(50, 42)
-        self.assertEqual(str(test_state.board), test_board_1)
+        self.assertEqual(repr(test_state), starting_board)
         
-    def test_mov_2(self):
+    def test_pawn_moves(self):
+        # Forward pawn movement
         test_state = GameState()
-        self.assertEqual(str(test_state.board), test_board)
-        test_state.move(50, 34)
-        self.assertEqual(str(test_state.board), test_board_2)
+        test_state.move(11, 19)
+        self.assertEqual(repr(test_state), test_board_1)
+        
+        # Double forward pawn movement
+        test_state = GameState()
+        test_state.move(11, 27)
+        self.assertEqual(repr(test_state), test_board_2)
+        
 
 
 
