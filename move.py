@@ -3,7 +3,7 @@ from util.utils import *
 
 # Class for a movement in a chess game
 class Move:
-    def __init__(self, piece, start_index, end_index, captured_piece, castling, en_passant):
+    def __init__(self, piece, start_index, end_index, captured_piece, castling, en_passant, check):
         self.piece = piece
         self.start = start_index
         self.end = end_index        
@@ -51,26 +51,61 @@ for square_index in range(SQUARE_COUNT):
         min(num_south, num_west)
     ]
        
-def legal_moves(game_state, square_index):
+def moves(game_state, square_index):
     square = game_state.get_square(square_index)
     piece = square.get_piece()
     
-    legal_moves = []
+    moves = []
     if piece.notation == 'P':
-        return legal_pawn_moves(game_state, square_index)
+        return pawn_moves(game_state, square_index)
     elif piece.notation == 'R':
-        return legal_rook_moves(game_state, square_index)
+        return rook_moves(game_state, square_index)
     elif piece.notation == 'N':
-        return legal_knight_moves(game_state, square_index)
+        return knight_moves(game_state, square_index)
     elif piece.notation == 'B':
-        return legal_bishop_moves(game_state, square_index)
+        return bishop_moves(game_state, square_index)
     elif piece.notation == 'Q':
-        return legal_rook_moves(game_state, square_index) + legal_bishop_moves(game_state, square_index)
+        return rook_moves(game_state, square_index) + bishop_moves(game_state, square_index)
     elif piece.notation == 'K':
-        return legal_king_moves(game_state, square_index)
+        return king_moves(game_state, square_index)
+    return moves
+
+def legal_moves(game_state, square_index):
     
-def legal_pawn_moves(game_state, piece_index):
-    legal_moves = []
+    possible_moves = moves(game_state, square_index)
+    for move in possible_moves:
+        NotImplemented
+    
+    
+def find_opponent_king(game_state, player):
+    opponent = 'w' if player == 'b' else 'b'
+    for square_index in range(SQUARE_COUNT):
+        square = game_state.get_square(square_index)
+        if not square.is_empty():
+            piece = square.get_piece()
+            if piece.notation == 'K' and piece.player == opponent:
+                opponent_king_index = square_index
+                break
+    return opponent_king_index
+                    
+    
+def is_check(game_state, player):
+    opponent_king_index = game_state.find_opponent_king(player)
+    
+    # Check all legal moves for 
+    for square_index in range(SQUARE_COUNT):
+        square = game_state.get_square(square_index)
+        if not square.is_empty():
+            piece = square.get_piece()
+            if piece.player == game_state.turn:
+                piece_moves = moves(piece, square_index)
+                print('Check if king index {} in piece_moves {}'.format(opponent_king_index, piece_moves))
+                if opponent_king_index in moves(piece, piece_moves):
+                    return True
+    return False
+    
+def pawn_moves(game_state, piece_index):
+    moves = []
     square = game_state.get_square(piece_index)
     piece = square.get_piece()
     
@@ -106,21 +141,21 @@ def legal_pawn_moves(game_state, piece_index):
             target_square = game_state.get_square(target_index)
             if not target_square.is_empty():
                 break
-            legal_moves.append(target_index)
+            moves.append(target_index)
         
         # Captures
         for target_index in captures:
             target_square = game_state.get_square(target_index)
             if not target_square.is_empty():
                 if not same_team(piece, target_square):
-                    legal_moves.append(target_index)
+                    moves.append(target_index)
             # Check for en passant
             elif game_state.en_passant == target_index:
-                legal_moves.append(target_index)
-    return legal_moves
+                moves.append(target_index)
+    return moves
         
-def legal_knight_moves(game_state, piece_index):
-    legal_moves = []
+def knight_moves(game_state, piece_index):
+    moves = []
     square = game_state.get_square(piece_index)
     piece = square.get_piece()
     
@@ -151,14 +186,14 @@ def legal_knight_moves(game_state, piece_index):
                 target_square = game_state.get_square(target_index)
                 if not target_square.is_empty():
                     if not same_team(piece, target_square):
-                        legal_moves.append(target_index)
+                        moves.append(target_index)
                 else:
-                    legal_moves.append(target_index)
+                    moves.append(target_index)
             offset_index += 1
-    return legal_moves
+    return moves
 
-def legal_rook_moves(game_state, piece_index):
-    legal_moves = []
+def rook_moves(game_state, piece_index):
+    moves = []
     square = game_state.get_square(piece_index)
     piece = square.get_piece()
     
@@ -176,13 +211,13 @@ def legal_rook_moves(game_state, piece_index):
                     break
                 # If target piece player is different, it's captured 
                 else:
-                    legal_moves.append(target_index)
+                    moves.append(target_index)
                     break
-            legal_moves.append(target_index)
-    return legal_moves
+            moves.append(target_index)
+    return moves
             
-def legal_bishop_moves(game_state, piece_index):
-    legal_moves = []
+def bishop_moves(game_state, piece_index):
+    moves = []
     square = game_state.get_square(piece_index)
     piece = square.get_piece()
     
@@ -200,13 +235,13 @@ def legal_bishop_moves(game_state, piece_index):
                     break
                 # If target piece player is different, it's captured 
                 else:
-                    legal_moves.append(target_index)
+                    moves.append(target_index)
                     break
-            legal_moves.append(target_index)
-    return legal_moves
+            moves.append(target_index)
+    return moves
 
-def legal_king_moves(game_state, piece_index):
-    legal_moves = []
+def king_moves(game_state, piece_index):
+    moves = []
     square = game_state.get_square(piece_index)
     piece = square.get_piece()
     
@@ -223,9 +258,9 @@ def legal_king_moves(game_state, piece_index):
                     continue
                 # If target piece player is different, it's captured 
                 else:
-                    legal_moves += [target_index]
+                    moves.append(target_index)
                     continue
-            legal_moves += [target_index]
+            moves.append(target_index)
             
     # Castling
     wK_castle, wQ_castle, bK_castle, bQ_castle = game_state.castling
@@ -239,7 +274,7 @@ def legal_king_moves(game_state, piece_index):
                     wk_able = False
                     break
             if wk_able:
-                legal_moves.append(6)
+                moves.append(6)
         if wQ_castle:
             for square_index in range(WHITE_ROOK_Q_INDEX + 1, WHITE_KING_INDEX):
                 between_square = game_state.get_square(square_index)
@@ -247,7 +282,7 @@ def legal_king_moves(game_state, piece_index):
                     wQ_able = False
                     break
             if wQ_able:
-                legal_moves.append(2)
+                moves.append(2)
     else:
         if bK_castle:
             for square_index in range(BLACK_KING_INDEX + 1, BLACK_ROOK_K_INDEX):
@@ -256,7 +291,7 @@ def legal_king_moves(game_state, piece_index):
                     bK_able = False
                     break
             if bK_able:
-                legal_moves.append(54)
+                moves.append(54)
         if bQ_castle:
             for square_index in range(BLACK_ROOK_Q_INDEX + 1, BLACK_KING_INDEX):
                 between_square = game_state.get_square(square_index)
@@ -264,8 +299,8 @@ def legal_king_moves(game_state, piece_index):
                     bQ_able = False
                     break
             if bQ_able:
-                legal_moves.append(58)
-    return legal_moves
+                moves.append(58)
+    return moves
 
 
 def same_team(selected_piece, target_square):

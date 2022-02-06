@@ -2,3 +2,5 @@ __pycache__/
 notes.txt
 unit_test/__pycache__/
 copy/
+test_playground.py
+.vscode/
