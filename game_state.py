@@ -32,7 +32,7 @@ class GameState:
         
         # En Passant square - index
         # Index where En Passant can happen
-        self.en_passant = FEN_Util.FEN_to_en_pessant(FEN_list[3])
+        self.en_passant = FEN_Util.FEN_to_en_passant(FEN_list[3])
         
         # Halfmove Counter - int
         # Moves since last pawn move or capture
@@ -61,8 +61,20 @@ class GameState:
         
         
         # Record if a piece was captured
+        captured_piece = None
+        en_passant_capture = False
         if end_square.is_empty():
-            captured_piece = None
+            # If en passant capture
+            if piece.notation == 'P' and end_index == self.en_passant:
+                print('en passant SWAG')
+                en_passant_capture = True
+                if piece.player == 'W':
+                    captured_index = end_index + 8
+                else:
+                    captured_index = end_index - 8
+                captured_square = self.get_square(captured_index)
+                captured_piece = captured_square.get_piece()
+        # Stores captured piece
         else:
             captured_piece = end_square.get_piece()
         
@@ -76,6 +88,9 @@ class GameState:
         # Update Start and End Square
         start_square.remove_piece()
         end_square.set_piece(piece)
+        if en_passant_capture:
+            print(captured_index)
+            captured_square.remove_piece()
             
         # Update Piece
         piece.move(end_index)
@@ -94,8 +109,12 @@ class GameState:
     
     def update_en_passant(self, piece, start_index, end_index):
         if piece.notation == 'P':
+            # Adds en passant when pawn moves forward twice
             if abs(start_index - end_index) == 16:
                 self.en_passant = (start_index + end_index) // 2
+        else:
+            self.en_passant = None
+            
             
         
 

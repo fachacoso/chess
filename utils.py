@@ -64,7 +64,7 @@ class FEN_Util:
             return []
         return [castle_notation for castle_notation in castling]
 
-    def FEN_to_en_pessant(coordinate):
+    def FEN_to_en_passant(coordinate):
         if coordinate == '-':
             return None
         return coordinate_to_index(coordinate)    
