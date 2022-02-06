@@ -101,6 +101,9 @@ class GameState:
             
         # Update Piece
         piece.move(end_index)
+        if piece.notation == 'P':
+            if end_index in FIRST_RANK_INDEXES or end_index in EIGHT_RANK_INDEXES:
+                end_square.promote_piece(end_index, 'Q')
         
         # Create Move Instance
         move = Move(piece, start_index, end_index, captured_piece, self.castling, self.en_passant)

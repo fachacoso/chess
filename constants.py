@@ -5,7 +5,7 @@ SQUARE_COUNT = 64
 FILE = RANK = 8
 
 # NOTATION CONSTANTS
-NOTATION = {'P': Pawn, 'R': Rook, 'N': Knight, 'B': Bishop, 'Q': Queen, 'K': King}
+INSTANCE_NOTATION_DICTIONARY = {'P': Pawn, 'R': Rook, 'N': Knight, 'B': Bishop, 'Q': Queen, 'K': King}
 
 FEN_NOTATION = {
                 'wP':'P',
@@ -43,6 +43,10 @@ NUM_TO_FILE_DICTIONARY = {0: 'a',
                     6: 'g',
                     7: 'h'
                     }
+
+# Helper var for pawn promotions
+FIRST_RANK_INDEXES = [0, 1, 2, 3, 4, 5, 6, 7]
+EIGHT_RANK_INDEXES = [56, 57, 58, 59, 60, 61, 62, 63]
 
 # Helper var for Castling rights
 WHITE_KING_INDEX = 4

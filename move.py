@@ -84,16 +84,16 @@ def legal_pawn_moves(game_state, piece_index):
     if piece.player == 'w':
         if num_north > 0:
             forward_offset = 8
-            if num_east > 1:
+            if num_east > 0:
                 captures.append(piece_index + 7)
-            if num_west > 1:
+            if num_west > 0:
                 captures.append(piece_index + 9)
     else:
         if num_south > 0:
             forward_offset = -8
-            if num_east > 1:
+            if num_east > 0:
                 captures.append(piece_index - 9)
-            if num_west > 1:
+            if num_west > 0:
                 captures.append(piece_index - 7)
 
     if (piece.player == 'w'and num_north > 0) or (piece.player == 'b'and num_south > 0):

@@ -7,7 +7,6 @@ class Piece(ABC):
         self.index = index
         self.player = player
         self.move_counter = 0
-        self.type = None
         
     def has_moved(self):
         if self.move_counter > 0:

@@ -1,3 +1,4 @@
+from constants import *
 class Square:
     # Initialize empty square
     def __init__(self, piece = None):
@@ -14,6 +15,13 @@ class Square:
         
     def remove_piece(self):
         self.piece = None
+        
+    def promote_piece(self, index, piece_notation):
+        player = self.get_piece().player
+        self.remove_piece()
+        piece = INSTANCE_NOTATION_DICTIONARY[piece_notation](index, player)
+        self.set_piece(piece)
+        
     
     # Unicode representation
     def __str__(self):

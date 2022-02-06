@@ -34,12 +34,12 @@ class FEN_Util:
         current_index = 55
         for char in piece_placement:
             if char.isupper():
-                piece = NOTATION[char]
+                piece = INSTANCE_NOTATION_DICTIONARY[char]
                 square = Square(piece(current_index, 'w'))
                 current_rank.append(square)
                 current_index += 1
             elif char.islower():
-                piece = NOTATION[char.upper()]
+                piece = INSTANCE_NOTATION_DICTIONARY[char.upper()]
                 square = Square(piece(current_index, 'b'))
                 current_rank.append(square)
                 current_index += 1
