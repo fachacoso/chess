@@ -10,6 +10,27 @@ class Move:
         self.captured = captured_piece
         self.castling = castling
         self.en_passant = en_passant
+        self.check = NotImplemented
+        print(self.__str__())
+        
+    # PGN notation
+    def __str__(self):
+        
+        notation = self.piece.notation
+        if notation == 'P':
+            notation = ''
+        capture = ''
+        if self.captured:
+            if self.piece.notation == 'P':
+                print(index_to_coordinate(self.start))
+                capture = index_to_coordinate(self.start)[0]
+            capture += 'x'
+        coordinate = index_to_coordinate(self.end)
+        
+        return notation + capture + coordinate
+    
+def parse_PGN(PGN):
+    NotImplemented
         
     
 sliding_offsets = [8, -8, -1, 1, 7, 9, -9, -7] # Directions for index offset - N, S, E, W, NE, NW, SE, SW
