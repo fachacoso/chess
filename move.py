@@ -1,5 +1,5 @@
 from constants import *
-from utils import *
+from util.utils import *
 
 # Class for a movement in a chess game
 class Move:
@@ -15,14 +15,12 @@ class Move:
         
     # PGN notation
     def __str__(self):
-        
         notation = self.piece.notation
         if notation == 'P':
             notation = ''
         capture = ''
         if self.captured:
             if self.piece.notation == 'P':
-                print(index_to_coordinate(self.start))
                 capture = index_to_coordinate(self.start)[0]
             capture += 'x'
         coordinate = index_to_coordinate(self.end)
@@ -56,10 +54,6 @@ for square_index in range(SQUARE_COUNT):
 def legal_moves(game_state, square_index):
     square = game_state.get_square(square_index)
     piece = square.get_piece()
-    """    
-    turn = game_state.turn
-    if piece.player != game_state.turn:
-        return []      """
     
     legal_moves = []
     if piece.notation == 'P':
@@ -101,7 +95,7 @@ def legal_pawn_moves(game_state, piece_index):
                 captures.append(piece_index - 9)
             if num_west > 1:
                 captures.append(piece_index - 7)
-                
+
     if (piece.player == 'w'and num_north > 0) or (piece.player == 'b'and num_south > 0):
         # Forward movement
         forward_max = 1
@@ -233,6 +227,44 @@ def legal_king_moves(game_state, piece_index):
                     continue
             legal_moves += [target_index]
             
+    # Castling
+    wK_castle, wQ_castle, bK_castle, bQ_castle = game_state.castling
+    wk_able, wQ_able, bK_able, bQ_able = [True, True, True, True]
+    player = piece.player
+    if player == 'w':
+        if wK_castle:
+            for square_index in range(WHITE_KING_INDEX + 1, WHITE_ROOK_K_INDEX):
+                between_square = game_state.get_square(square_index)
+                if not between_square.is_empty():
+                    wk_able = False
+                    break
+            if wk_able:
+                legal_moves.append(6)
+        if wQ_castle:
+            for square_index in range(WHITE_ROOK_Q_INDEX + 1, WHITE_KING_INDEX):
+                between_square = game_state.get_square(square_index)
+                if not between_square.is_empty():
+                    wQ_able = False
+                    break
+            if wQ_able:
+                legal_moves.append(2)
+    else:
+        if bK_castle:
+            for square_index in range(BLACK_KING_INDEX + 1, BLACK_ROOK_K_INDEX):
+                between_square = game_state.get_square(square_index)
+                if not between_square.is_empty():
+                    bK_able = False
+                    break
+            if bK_able:
+                legal_moves.append(54)
+        if bQ_castle:
+            for square_index in range(BLACK_ROOK_Q_INDEX + 1, BLACK_KING_INDEX):
+                between_square = game_state.get_square(square_index)
+                if not between_square.is_empty():
+                    bQ_able = False
+                    break
+            if bQ_able:
+                legal_moves.append(58)
     return legal_moves
 
 

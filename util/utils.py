@@ -60,11 +60,11 @@ class FEN_Util:
 
 
     def FEN_to_castling(castling):
-        if castling == '-':
-            return []
-        return [castle_notation for castle_notation in castling]
+        return ['K' in castling, 'Q' in castling, 'k' in castling, 'q' in castling]
 
     def FEN_to_en_passant(coordinate):
         if coordinate == '-':
             return None
         return coordinate_to_index(coordinate)    
+    
+    
