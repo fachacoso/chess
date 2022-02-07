@@ -12,7 +12,7 @@ class FEN:
     <Side to move>
     <Castling ability>
     <En passant target square>
-    <Halfmove clock>
+    <Halfmove count>
     <Fullmove count>
 
     ex. rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2
@@ -27,20 +27,20 @@ class FEN:
             FEN ([string]): FEN representation of game state
         """
         # Parse FEN string
-        FEN_list                = FEN.split()
-        board_string            = FEN_list[0]
-        turn_string             = FEN_list[1]
-        castling_string         = FEN_list[2]
-        en_passant_string       = FEN_list[3]
+        FEN_list              = FEN.split()
+        board_string          = FEN_list[0]
+        turn_string           = FEN_list[1]
+        castling_string       = FEN_list[2]
+        en_passant_string     = FEN_list[3]
         halfmove_count_string = FEN_list[4]
         turn_count_string     = FEN_list[5]
         
         # Set attributes
-        self.string           = FEN
-        self.board            = self.get_board(board_string)
-        self.turn             = self.get_turn(turn_string)
-        self.castling         = self.get_castling(castling_string)
-        self.en_passant       = self.get_en_passant(en_passant_string)
+        self.string         = FEN
+        self.board          = self.get_board(board_string)
+        self.turn           = self.get_turn(turn_string)
+        self.castling       = self.get_castling(castling_string)
+        self.en_passant     = self.get_en_passant(en_passant_string)
         self.halfmove_count = self.get_halfmove_count(halfmove_count_string)
         self.turn_count     = self.get_turn_count(turn_count_string)
 
@@ -112,8 +112,9 @@ class FEN:
         return turn_string
 
     def get_halfmove_count(self, halfmove_count_string):
-        # Halfmove - moves since last pawn move or capture
+        """ Halfmove - moves since last pawn move or capture """
         return int(halfmove_count_string)
 
     def get_turn_count(self, turn_count):
+        """ How many turns passed in game"""
         return int(turn_count)

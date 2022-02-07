@@ -9,8 +9,13 @@ from test_boards import *
 
 class TestBasicMovement(unittest.TestCase):    
     def test_FEN(self):
-        test_state = GameState()
-        self.assertEqual(repr(test_state), starting_board)
+        test_state_1 = GameState()
+        self.assertEqual(repr(test_state_1), starting_FEN)
+        test_state_2 = GameState(test_FEN_1)
+        self.assertEqual(repr(test_state_2), test_FEN_1)
+        test_state_3 = GameState(test_FEN_2)
+        self.assertEqual(repr(test_state_3), test_FEN_2)
+        
         
     def test_pawn_moves(self):
         # Forward pawn movement

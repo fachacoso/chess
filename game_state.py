@@ -236,6 +236,7 @@ class GameState:
 
     # Unicode representation of board
     def __str__(self):
+        # ! unicode errors
         string = ""
         stack = []
         for rank in range(RANK):
@@ -277,6 +278,8 @@ class GameState:
                     piece_placement += str(dash_count)
                     dash_count = 0
             piece_placement += char
+        if dash_count > 0:
+            piece_placement += str(dash_count)
         FEN_list.append(piece_placement)
 
         # Turn
@@ -284,10 +287,17 @@ class GameState:
 
         # Castling
         castling_string_list = ["KQkq"[i] for i in range(4) if self.castling[i]]
-        FEN_list.append("".join(castling_string_list))
+        if any(castling_string_list) == False:
+            castling_string_list = '-'
+        castling_string = "".join(castling_string_list)
+        FEN_list.append(castling_string)
 
         # En Passant Square
-        FEN_list.append(index_to_coordinate(self.en_passant))
+        if self.en_passant != None:
+            en_passant_string = '-'
+        else:
+            en_passant_string = index_to_coordinate(self.en_passant)
+        FEN_list.append(en_passant_string)
 
         # Halfmove Counter
         FEN_list.append(str(self.halfmove_count))
