@@ -16,10 +16,12 @@ class Square:
     def remove_piece(self):
         self.piece = None
         
-    def promote_piece(self, index, piece_notation):
-        player = self.get_piece().player
+    def promote_pawn(self, index, piece_notation):
+        piece = self.get_piece()
+        player = piece.player
+        move_count = piece.move_count
         self.remove_piece()
-        piece = INSTANCE_NOTATION_DICTIONARY[piece_notation](index, player)
+        piece = INSTANCE_NOTATION_DICTIONARY[piece_notation](index, player, move_count)
         self.set_piece(piece)
         
     

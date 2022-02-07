@@ -13,7 +13,7 @@ class FEN:
     <Castling ability>
     <En passant target square>
     <Halfmove clock>
-    <Fullmove counter>
+    <Fullmove count>
 
     ex. rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2
 
@@ -32,8 +32,8 @@ class FEN:
         turn_string             = FEN_list[1]
         castling_string         = FEN_list[2]
         en_passant_string       = FEN_list[3]
-        halfmove_counter_string = FEN_list[4]
-        turn_counter_string     = FEN_list[5]
+        halfmove_count_string = FEN_list[4]
+        turn_count_string     = FEN_list[5]
         
         # Set attributes
         self.string           = FEN
@@ -41,8 +41,8 @@ class FEN:
         self.turn             = self.get_turn(turn_string)
         self.castling         = self.get_castling(castling_string)
         self.en_passant       = self.get_en_passant(en_passant_string)
-        self.halfmove_counter = self.get_halfmove_counter(halfmove_counter_string)
-        self.turn_counter     = self.get_turn_counter(turn_counter_string)
+        self.halfmove_count = self.get_halfmove_count(halfmove_count_string)
+        self.turn_count     = self.get_turn_count(turn_count_string)
 
     def get_board(self, piece_placement):
         """Convert string to a GameState board
@@ -111,9 +111,9 @@ class FEN:
         """
         return turn_string
 
-    def get_halfmove_counter(self, halfmove_counter_string):
+    def get_halfmove_count(self, halfmove_count_string):
         # Halfmove - moves since last pawn move or capture
-        return int(halfmove_counter_string)
+        return int(halfmove_count_string)
 
-    def get_turn_counter(self, turn_counter):
-        return int(turn_counter)
+    def get_turn_count(self, turn_count):
+        return int(turn_count)

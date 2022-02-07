@@ -3,23 +3,23 @@ from abc import ABC, abstractmethod
 # Class for each chess piece
 class Piece(ABC):
 
-    def __init__(self, index, player):
+    def __init__(self, index, player, move_count = 0):
         self.index = index
         self.player = player
-        self.move_counter = 0
+        self.move_count = move_count
         
     def has_moved(self):
-        if self.move_counter > 0:
+        if self.move_count > 0:
             return True
         return False
     
     def move(self, new_index):
         self.index = new_index
-        self.move_counter += 1
+        self.move_count += 1
         
     def undo_move(self, old_index):
         self.index = old_index
-        self.move_counter -= 1
+        self.move_count -= 1
 
     # Unicode representation
     def __str__(self):

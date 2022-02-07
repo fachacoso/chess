@@ -23,63 +23,53 @@ class GameState:
         rights to castle
     en_passant : int
         target index for en passant
-    halfmove_counter : int
-        counter for halfmove
-    turn_counter : int
-        counter for turn
+    halfmove_count : int
+        count for halfmove
+    turn_count : int
+        count for turn
     current_FEN : FEN
         FEN object that represents current game state
     FEN_history : FEN[]
         list of previous FEN's
     move_history : Move[]
         list of previous moves
-    history_counter : int
+    history_count : int
         index of current board viewed, used for viewing previous moves
+    captured : Piece[]
+        list of pieces captured
     
     Methods
     -------
-    info(additional=""):
-        Prints the person's name and age.
-    
+    self.move(start_index, end_index)
+        makes a move
+        
+    self.set_attributes_from_FEN()
+        load GameState attribute from current_FEN
+        
+    self.update_game_state(piece, start_index, end_index, captured_piece)
+        updates instance attributes
     '''
     def __init__(self, FEN_string=STARTING_FEN):
         # Initializes starting board using FEN notation string
         self.current_FEN = FEN(FEN_string)
         self.set_attributes_from_FEN()
         self.move_history = []
-        self.history_counter = self.turn_counter
+        self.history_count = self.turn_count
+        self.captured = []
         
-    
-    # FEN methods
-    def set_attributes_from_FEN(self):
-        ''' Load game_state attributes from current_FEN '''
-        self.__dict__.update(self.current_FEN.__dict__)
-    
-    def get_updated_FEN(self):
-        ''' Return new FEN notation after move '''
-        new_FEN = FEN(self.__repr__())
-        return new_FEN
-
-    def is_legal_move(self, start_index, end_index):
-        return end_index in moves(self, start_index)
-
-    def get_square(self, index):
-        return self.board[index]
-
+        
+    # Move methods
     def move(self, start_index, end_index):
         start_square = self.get_square(start_index)
         end_square = self.get_square(end_index)
         piece = start_square.get_piece()
 
-        if piece.player != self.turn:
-            return
-
         if not self.is_legal_move(start_index, end_index):
+            print("NOT LEGAL")
             return
 
-        # Record if a piece was captured
+        # Check capture
         captured_piece = None
-        en_passant_capture = False
         if end_square.is_empty():
             # If en passant capture
             if piece.notation == "P" and end_index == self.en_passant:
@@ -88,35 +78,25 @@ class GameState:
                     captured_index = end_index + 8
                 else:
                     captured_index = end_index - 8
-                captured_square = self.get_square(captured_index)
-                captured_piece = captured_square.get_piece()
+                captured_piece = self.capture_piece(captured_index)
         # Stores captured piece
         else:
-            captured_piece = end_square.get_piece()
-
+            captured_piece = self.capture_piece(end_index)
+            
+        # Move
+        self.move_piece(start_index, end_index)
+        
         # Castle move check
         if piece.notation == "K" and abs(start_index - end_index) == 2:
             castle_index = (start_index + end_index) // 2
             self.castle_move(castle_index)
 
         # Update GameState
-        self.history_counter += 1
+        self.history_count += 1
         self.update_turn()
         self.update_en_passant(piece, start_index, end_index)
         self.update_castling(piece)
         self.update_halfmove(piece, captured_piece)
-
-        # Update Start and End Square
-        start_square.remove_piece()
-        end_square.set_piece(piece)
-        if en_passant_capture:
-            captured_square.remove_piece()
-
-        # Update Piece
-        piece.move(end_index)
-        if piece.notation == "P":
-            if end_index in FIRST_RANK_INDEXES or end_index in EIGHT_RANK_INDEXES:
-                end_square.promote_piece(end_index, "Q")
 
         # Create Move Instance
         """check = is_check(self, self.player)"""
@@ -130,23 +110,85 @@ class GameState:
             False,
         )
         self.move_history.append(move)
+        
+    def is_legal_move(self, start_index, end_index):
+        return end_index in moves(self, start_index)
+    
+    def move_piece(self, start_index, end_index):
+        """Move piece on start_index to end_index
 
-    def castle_move(self, end_index):
-        # Key - end index | Val - rook index
-        # ! bK castling not working
-        castle_dic = {3: 0, 5: 7, 61: 63, 59: 56}
-        start_square = self.get_square(castle_dic[end_index])
-        piece = start_square.get_piece()
+        Args:
+            start_index (int): index of piece
+            end_index (int): index of target square
+        """        
+        start_square = self.get_square(start_index)
         end_square = self.get_square(end_index)
+        piece = start_square.get_piece()
+
+        # Update squares
         start_square.remove_piece()
         end_square.set_piece(piece)
+
+        # Update Piece
         piece.move(end_index)
+        self.check_pawn_promotion(end_index)
+
+    def capture_piece(self, captured_index):
+        """Remove captured piece on captured index and return it
+
+        Args:
+            captured_index (int): index of piece captured
+
+        Returns:
+            Piece: piece object of captured piece
+        """        
+        square = self.get_square(captured_index)
+        piece = square.get_piece()
+        self.captured.append(piece)
+        square.remove_piece()
+        return piece
+    
+    def check_pawn_promotion(self, index):
+        """Checks if piece is pawn and eligible to promote.  If so, promotes to Queen.
+
+        Args:
+            index (int): index of piece
+        """        
+        square = self.get_square(index)
+        piece = square.get_piece()
+        if piece.notation == "P":
+            if index in FIRST_RANK_INDEXES or index in EIGHT_RANK_INDEXES:
+                square.promote_pawn(index, "Q")
+    
+    # FEN methods
+    def set_attributes_from_FEN(self):
+        ''' Load game_state attributes from current_FEN '''
+        self.__dict__.update(self.current_FEN.__dict__)
+    
+    def get_updated_FEN(self):
+        ''' Return new FEN notation after move '''
+        new_FEN = FEN(self.__repr__())
+        return new_FEN
+
+
+    
+
+    def castle_move(self, end_index):
+        """Move rook when castling
+
+        Args:
+            end_index (int): target index of rook
+        """
+        # ! bK castling not working
+        castle_dic = {3: 0, 5: 7, 61: 63, 59: 56}
+        start_index = castle_dic[end_index]
+        self.move_piece(start_index, end_index)
 
     def update_turn(self, undo=False):
         if undo:
-            self.turn_counter -= 1
+            self.turn_count -= 1
         else:
-            self.turn_counter += 1
+            self.turn_count += 1
         self.turn = "w" if self.turn == "b" else "b"
 
     def update_en_passant(self, piece, start_index, end_index):
@@ -188,9 +230,9 @@ class GameState:
 
     def update_halfmove(self, piece, captured_piece):
         if piece.notation == "P" or captured_piece != None:
-            self.halfmove_counter = 0
+            self.halfmove_count = 0
         else:
-            self.halfmove_counter += 1
+            self.halfmove_count += 1
 
     # Unicode representation of board
     def __str__(self):
@@ -248,9 +290,14 @@ class GameState:
         FEN_list.append(index_to_coordinate(self.en_passant))
 
         # Halfmove Counter
-        FEN_list.append(str(self.halfmove_counter))
+        FEN_list.append(str(self.halfmove_count))
 
         # Turn(Fullmove) Counter
-        FEN_list.append(str(self.turn_counter))
+        FEN_list.append(str(self.turn_count))
 
         return " ".join(FEN_list)
+
+
+
+    def get_square(self, index):
+        return self.board[index]
