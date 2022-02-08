@@ -1,7 +1,7 @@
-from move import Move, moves
-from util.utils import *
-from util.FEN import FEN
-from constants import *
+import move
+import util.utils as util
+import util.FEN as FEN_util
+import constants
 
   
 class GameState:
@@ -49,9 +49,9 @@ class GameState:
     self.update_game_state(piece, start_index, end_index, captured_piece)
         updates instance attributes
     '''
-    def __init__(self, FEN_string=STARTING_FEN):
+    def __init__(self, FEN_string = constants.STARTING_FEN):
         # Initializes starting board using FEN notation string
-        FEN.load_FEN_string(self, FEN_string)
+        FEN_util.FEN.load_FEN_string(self, FEN_string)
         self.move_history  = []
         self.history_count = self.turn_count
         self.captured      = []
@@ -95,7 +95,7 @@ class GameState:
 
 
         # Create Move Instance
-        move = Move(
+        move_obj = move.Move(
             piece,
             start_index,
             end_index,
@@ -104,10 +104,10 @@ class GameState:
             self.en_passant,
             False,
         )
-        self.move_history.append(move)
+        self.move_history.append(move_obj)
         
     def is_legal_move(self, start_index, end_index):
-        return end_index in moves(self, start_index)
+        return end_index in move.moves(self, start_index)
     
     def move_piece(self, start_index, end_index):
         """Move piece on start_index to end_index
@@ -152,7 +152,7 @@ class GameState:
         square = self.get_square(index)
         piece = square.get_piece()
         if piece.notation == "P":
-            if index in FIRST_RANK_INDEXES or index in EIGHT_RANK_INDEXES:
+            if index in constants.FIRST_RANK_INDEXES or index in constants.EIGHT_RANK_INDEXES:
                 square.promote_pawn(index, "Q")
     
 
@@ -209,17 +209,17 @@ class GameState:
 
         if piece.notation == "K" or piece.notation == "R":
             castle_list = [False, False, False, False]
-            if validate_piece(WHITE_KING_INDEX, "K", "w"):
-                if validate_piece(WHITE_ROOK_K_INDEX, "R", "w"):
+            if validate_piece(constants.WHITE_KING_INDEX, "K", "w"):
+                if validate_piece(constants.WHITE_ROOK_K_INDEX, "R", "w"):
                     castle_list[0] = True
-                if validate_piece(WHITE_ROOK_Q_INDEX, "R", "w"):
+                if validate_piece(constants.WHITE_ROOK_Q_INDEX, "R", "w"):
                     castle_list[1] = True
 
             # Check black castling rights
-            if validate_piece(BLACK_KING_INDEX, "K", "b"):
-                if validate_piece(BLACK_ROOK_K_INDEX, "R", "b"):
+            if validate_piece(constants.BLACK_KING_INDEX, "K", "b"):
+                if validate_piece(constants.BLACK_ROOK_K_INDEX, "R", "b"):
                     castle_list[2] = True
-                if validate_piece(BLACK_ROOK_Q_INDEX, "R", "b"):
+                if validate_piece(constants.BLACK_ROOK_Q_INDEX, "R", "b"):
                     castle_list[3] = True
 
             self.castling = castle_list
@@ -231,20 +231,20 @@ class GameState:
             self.halfmove_count += 1
 
     def update_FEN(self):
-        self.current_FEN = FEN.create_FEN_string(self)
+        self.current_FEN = FEN_util.FEN.create_FEN_string(self)
 
     # Unicode representation of board
     def __str__(self):
         # ! unicode errors
         string = ""
         stack = []
-        for rank in range(RANK):
+        for rank in range(constants.RANK):
             current_rank = []
             for file in range(FILE):
                 index = xy_to_index(file, rank)
                 current_rank.append(self.get_square(index).__str__())
             stack.append(current_rank)
-        for _ in range(RANK):
+        for _ in range(constants.RANK):
             string += " ".join(stack.pop())
             string += "\n"
         return string

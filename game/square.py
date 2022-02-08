@@ -1,4 +1,4 @@
-from constants import *
+import constants
 
 class Square:
     # Initialize empty square
@@ -22,7 +22,7 @@ class Square:
         player = piece.player
         move_count = piece.move_count
         self.remove_piece()
-        piece = INSTANCE_NOTATION_DICTIONARY[piece_notation](index, player, move_count)
+        piece = constants.INSTANCE_NOTATION_DICTIONARY[piece_notation](index, player, move_count)
         self.set_piece(piece)
         
     

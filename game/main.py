@@ -1,7 +1,7 @@
 import pygame
 import numpy
-from game_state import GameState
-from constants import *
+import game_state
+import constants
 
 BOARD_SIZE = 1000
 SQUARE_SIZE = BOARD_SIZE // 8
@@ -16,7 +16,7 @@ DARK = (108, 82, 59)
 def main():
     pygame.init()
     load_pieces()
-    game_state = GameState()
+    game = game_state.GameState()
 
     # Game loop
     selected_index = None
@@ -29,24 +29,24 @@ def main():
             # Mouse listening
             mouse_pos = pygame.mouse.get_pos()
             index_hovered = get_index(mouse_pos)
-            square_hovered = game_state.get_square(index_hovered)
+            square_hovered = game.get_square(index_hovered)
             if e.type == pygame.MOUSEBUTTONDOWN:
                 # If clicked on occupied square, hold selected piece (NEED TO ADD PLAYER CHECK)
                 if not square_hovered.is_empty():
                     piece = square_hovered.get_piece()
-                    if piece.player == game_state.turn:
+                    if piece.player == game.turn:
                         reset_square(index_hovered)
                         selected_index = index_hovered
 
             # Lets go of piece
             if e.type == pygame.MOUSEBUTTONUP and type(selected_index) == int:
                 if index_hovered != selected_index:
-                    game_state.move(selected_index, index_hovered)
+                    game.move(selected_index, index_hovered)
                 selected_index = None
 
 
         # Updates each frame
-        update_view(game_state, selected_index, mouse_pos)
+        update_view(game, selected_index, mouse_pos)
         pygame.display.update()
 
 
@@ -57,7 +57,7 @@ def main():
 
 # Creates board
 def draw_board():
-    for square_index in range(SQUARE_COUNT):
+    for square_index in range(constants.SQUARE_COUNT):
         reset_square(square_index)
 
 # Redraws an empty square
@@ -76,7 +76,7 @@ def load_pieces():
 
 def update_view(game_state, selected_index, mouse_pos):
     draw_board()
-    for square_index in range(SQUARE_COUNT):
+    for square_index in range(constants.SQUARE_COUNT):
 
         # Skip drawing piece selected/being held
         if type(selected_index) == int:
