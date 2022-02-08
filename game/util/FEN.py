@@ -66,7 +66,7 @@ class FEN:
         board          = []
         position_stack = []
         current_rank   = []
-        current_index  = 55
+        current_index  = 56
         for char in piece_placement:
             if char.isupper():
                 piece  = INSTANCE_NOTATION_DICTIONARY[char]

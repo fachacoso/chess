@@ -15,11 +15,11 @@ class GameState:
         
     Attributes
     ----------
-    board : Square[64]
+    board : list[Square()] (64)
         list of Square objects representing board
     turn : str
         player to move ('w' or 'b')
-    castling : bool[4]
+    castling : list[bool] (4)
         rights to castle
     en_passant : int
         target index for en passant
@@ -31,22 +31,22 @@ class GameState:
         FEN object that represents current game state
     FEN_history : FEN[]
         list of previous FEN's
-    move_history : Move[]
+    move_history : list[Move()]
         list of previous moves
     history_count : int
         index of current board viewed, used for viewing previous moves
-    captured : Piece[]
+    captured : list[Piece()]
         list of pieces captured
     
     Methods
     -------
-    self.move(start_index, end_index)
+    move(self, start_index, end_index)
         makes a move
         
-    self.set_attributes_from_FEN()
+    set_attributes_from_FEN(self)
         load GameState attribute from current_FEN
         
-    self.update_game_state(piece, start_index, end_index, captured_piece)
+    update_game_state(self, piece, start_index, end_index, captured_piece)
         updates instance attributes
     '''
     def __init__(self, FEN_string = constants.STARTING_FEN):
@@ -107,7 +107,8 @@ class GameState:
         self.move_history.append(move_obj)
         
     def is_legal_move(self, start_index, end_index):
-        return end_index in move.moves(self, start_index)
+        # ! Only putting moves, not checking if legal
+        return end_index in move.Move.moves(self, start_index)
     
     def move_piece(self, start_index, end_index):
         """Move piece on start_index to end_index
@@ -240,8 +241,8 @@ class GameState:
         stack = []
         for rank in range(constants.RANK):
             current_rank = []
-            for file in range(FILE):
-                index = xy_to_index(file, rank)
+            for file in range(constants.FILE):
+                index = util.xy_to_index(file, rank)
                 current_rank.append(self.get_square(index).__str__())
             stack.append(current_rank)
         for _ in range(constants.RANK):

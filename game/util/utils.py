@@ -1,4 +1,4 @@
-from constants import *
+import constants
 
 
 def coordinate_to_index(coordinate):
@@ -9,7 +9,7 @@ def coordinate_to_index(coordinate):
     47
     """
     file_num, rank = coordinate
-    return FILE_TO_NUM_DICTIONARY[file_num] + rank * 8 - 1
+    return constants.FILE_TO_NUM_DICTIONARY[file_num] + rank * 8 - 1
 
 def index_to_coordinate(index):
     """Takes index and returns coordinate
@@ -21,7 +21,7 @@ def index_to_coordinate(index):
     if index == None:
         return '-'
     file_num =  get_x(index)
-    file = NUM_TO_FILE_DICTIONARY[file_num]
+    file = constants.NUM_TO_FILE_DICTIONARY[file_num]
     rank = get_y(index)
     return file + str(rank + 1)
 

@@ -3,10 +3,17 @@ starting_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
 """
 FEN constants
 """
-test_FEN_1 = '1k1r4/ppp4p/2b2Np1/4Rp2/3N2B1/8/PP3PPP/3R2K1 b - - 0 24'
 
-test_FEN_2 = '4r3/1p1k1ppp/p3r3/2bp4/N5b1/NP6/PBPP1PPP/4RRK1 w - - 6 21'
+no_pawn_FEN = 'rnbqkbnr/8/8/8/8/8/8/RNBQKBNR w KQkq - 0 1'
 
+forward_pawn_FEN = 'rnbqkbnr/pppppppp/8/8/8/3P4/PPP1PPPP/RNBQKBNR b KQkq - 0 1'
+
+forward_double_pawn_FEN = 'rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1'
+
+pawn_capture_FEN_1 = 'rnbqkbnr/pp1p1ppp/2p5/3Pp3/8/8/PPP1PPPP/RNBQKBNR w KQkq e6 0 2'
+# pawn to e5
+pawn_capture_FEN_2 = 'rnbqkbnr/pp1p1ppp/2p5/3Pp3/8/8/PPP1PPPP/RNBQKBNR w KQkq e6 0 2'
+pawn_en_passant_FEN = 'rnbqkbnr/pp1p1ppp/2p1P3/8/8/8/PPP1PPPP/RNBQKBNR b KQkq - 0 2'
 
 """
 Castling constants
