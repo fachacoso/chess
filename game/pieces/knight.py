@@ -5,13 +5,13 @@ class Knight(piece.Piece):
     notation = 'N'
 
 
-    def get_moves(self, game_state, piece_index):
+    def get_moves(self, game_state):
         moves  = []
-        square = game_state.get_square(piece_index)
+        square = game_state.get_square(self.index)
         piece  = square.get_piece()
         
         # Helper variables
-        direction_max = piece_constants.NUM_SQUARES_TO_EDGE[piece_index]
+        direction_max = piece_constants.NUM_SQUARES_TO_EDGE[self.index]
         num_north, num_south, num_east, num_west = direction_max[:4]
         
         # All 8 directions
@@ -33,7 +33,7 @@ class Knight(piece.Piece):
                     vertical_max = num_north
                 
                 if horizontal_max >= abs(x) and  vertical_max >= abs(y):
-                    target_index = piece_index + offsets[offset_index]
+                    target_index = self.index + offsets[offset_index]
                     target_square = game_state.get_square(target_index)
                     if not target_square.is_empty():
                         if not piece.same_team(target_square):

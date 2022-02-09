@@ -30,7 +30,7 @@ class FEN:
         castling_string       = FEN_list[2]
         en_passant_string     = FEN_list[3]
         halfmove_count_string = FEN_list[4]
-        turn_count_string     = FEN_list[5]
+        fullmove_count_string = FEN_list[5]
         
         # Set attributes
         self.FEN_string     = FEN
@@ -39,7 +39,7 @@ class FEN:
         self.castling       = self.read_castling(castling_string)
         self.en_passant     = self.read_en_passant(en_passant_string)
         self.halfmove_count = self.read_halfmove_count(halfmove_count_string)
-        self.turn_count     = self.read_turn_count(turn_count_string)
+        self.fullmove_count = self.read_fullmove_count(fullmove_count_string)
         
     @classmethod
     def load_FEN_string(cls, game_state, FEN_string):
@@ -125,9 +125,9 @@ class FEN:
         """ Halfmove - moves since last pawn move or capture """
         return int(halfmove_count_string)
 
-    def read_turn_count(self, turn_count):
-        """ How many turns passed in game"""
-        return int(turn_count)
+    def read_fullmove_count(self, fullmove_count_string):
+        """ How many fullmoves passed in game"""
+        return int(fullmove_count_string)
 
     
     """
@@ -143,7 +143,7 @@ class FEN:
         FEN_list.append(FEN.create_castling(game_state))
         FEN_list.append(FEN.create_en_passant(game_state))
         FEN_list.append(FEN.create_halfmove_count(game_state))
-        FEN_list.append(FEN.create_turn_count(game_state))
+        FEN_list.append(FEN.create_fullmove_count(game_state))
         return " ".join(FEN_list)
     
     @classmethod
@@ -204,6 +204,6 @@ class FEN:
         return FEN_string
     
     @classmethod
-    def create_turn_count(cls, game_state):
-        FEN_string = str(game_state.turn_count)
+    def create_fullmove_count(cls, game_state):
+        FEN_string = str(game_state.fullmove_count)
         return FEN_string

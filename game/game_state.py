@@ -2,6 +2,7 @@ import move
 import util.utils as util
 import util.FEN as FEN_util
 import constants
+import pieces.piece_constants as piece_constants
 
   
 class GameState:
@@ -25,8 +26,10 @@ class GameState:
         target index for en passant
     halfmove_count : int
         count for halfmove
+    fullmove_count : int
+        count for fullmove
     turn_count : int
-        count for turn
+        count for each turn
     current_FEN : FEN
         FEN object that represents current game state
     FEN_history : FEN[]
@@ -40,6 +43,9 @@ class GameState:
     
     Methods
     -------
+    clone_game_state(self)
+        makes copy of GameState
+    
     move(self, start_index, end_index)
         makes a move
         
@@ -53,9 +59,11 @@ class GameState:
         # Initializes starting board using FEN notation string
         FEN_util.FEN.load_FEN_string(self, FEN_string)
         self.move_history  = []
-        self.history_count = self.turn_count
+        self.history_count = 0
         self.captured      = []
         
+    def clone_game_state(self):
+        return GameState(self.current_FEN)
         
     # Move methods
     def move(self, start_index, end_index):
@@ -105,6 +113,7 @@ class GameState:
             False,
         )
         self.move_history.append(move_obj)
+
         
     def is_legal_move(self, start_index, end_index):
         # ! Only putting moves, not checking if legal
@@ -153,7 +162,7 @@ class GameState:
         square = self.get_square(index)
         piece = square.get_piece()
         if piece.notation == "P":
-            if index in constants.FIRST_RANK_INDEXES or index in constants.EIGHT_RANK_INDEXES:
+            if index in piece_constants.FIRST_RANK_INDEXES or index in piece_constants.EIGHT_RANK_INDEXES:
                 square.promote_pawn(index, "Q")
     
 
@@ -163,7 +172,6 @@ class GameState:
         Args:
             end_index (int): target index of rook
         """
-        # ! bK castling not working
         castle_dic = {3: 0, 5: 7, 61: 63, 59: 56}
         start_index = castle_dic[end_index]
         self.move_piece(start_index, end_index)
@@ -182,10 +190,12 @@ class GameState:
         self.update_FEN()
 
     def update_turn(self, undo=False):
+        # ! NEEDS TO UPDATE TURN COUNT
+        """        
         if undo:
             self.turn_count -= 1
         else:
-            self.turn_count += 1
+            self.turn_count += 1"""
         self.turn = "w" if self.turn == "b" else "b"
 
     def update_en_passant(self, piece, start_index, end_index):
@@ -210,17 +220,17 @@ class GameState:
 
         if piece.notation == "K" or piece.notation == "R":
             castle_list = [False, False, False, False]
-            if validate_piece(constants.WHITE_KING_INDEX, "K", "w"):
-                if validate_piece(constants.WHITE_ROOK_K_INDEX, "R", "w"):
+            if validate_piece(piece_constants.WHITE_KING_INDEX, "K", "w"):
+                if validate_piece(piece_constants.WHITE_ROOK_K_INDEX, "R", "w"):
                     castle_list[0] = True
-                if validate_piece(constants.WHITE_ROOK_Q_INDEX, "R", "w"):
+                if validate_piece(piece_constants.WHITE_ROOK_Q_INDEX, "R", "w"):
                     castle_list[1] = True
 
             # Check black castling rights
-            if validate_piece(constants.BLACK_KING_INDEX, "K", "b"):
-                if validate_piece(constants.BLACK_ROOK_K_INDEX, "R", "b"):
+            if validate_piece(piece_constants.BLACK_KING_INDEX, "K", "b"):
+                if validate_piece(piece_constants.BLACK_ROOK_K_INDEX, "R", "b"):
                     castle_list[2] = True
-                if validate_piece(constants.BLACK_ROOK_Q_INDEX, "R", "b"):
+                if validate_piece(piece_constants.BLACK_ROOK_Q_INDEX, "R", "b"):
                     castle_list[3] = True
 
             self.castling = castle_list
@@ -258,3 +268,4 @@ class GameState:
 
     def get_square(self, index):
         return self.board[index]
+    

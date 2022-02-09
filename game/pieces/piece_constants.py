@@ -38,3 +38,11 @@ UNICODE_SYMBOLS = {
                 'bQ':'♛',
                 'bK':'♚'
                 }
+
+# Helper var for Castling rights
+WHITE_KING_INDEX = 4
+WHITE_ROOK_K_INDEX = 7
+WHITE_ROOK_Q_INDEX = 0
+BLACK_KING_INDEX = 60
+BLACK_ROOK_K_INDEX = 63
+BLACK_ROOK_Q_INDEX = 56
