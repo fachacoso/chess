@@ -41,8 +41,11 @@ def main():
             # Lets go of piece
             if e.type == pygame.MOUSEBUTTONUP and type(selected_index) == int:
                 if index_hovered != selected_index:
-                    game.move(selected_index, index_hovered)
+                    game.make_move(selected_index, index_hovered)
                 selected_index = None
+                
+            if e.type == pygame.KEYDOWN:
+                game.undo_move()
 
 
         # Updates each frame

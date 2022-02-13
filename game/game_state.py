@@ -1,3 +1,4 @@
+from msilib.schema import Error
 import move
 import util.utils as util
 import util.FEN as FEN_util
@@ -57,7 +58,9 @@ class GameState:
     '''
     def __init__(self, FEN_string = constants.STARTING_FEN):
         # Initializes starting board using FEN notation string
-        FEN_util.FEN.load_FEN_string(self, FEN_string)
+        current_FEN = FEN_util.FEN(FEN_string)
+        current_FEN.load_FEN_string(self)
+        self.FEN_history   = []
         self.move_history  = []
         self.history_count = 0
         self.captured      = []
@@ -66,13 +69,13 @@ class GameState:
         return GameState(self.current_FEN)
         
     # Move methods
-    def move(self, start_index, end_index):
+    def make_move(self, start_index, end_index):
         start_square = self.get_square(start_index)
         end_square   = self.get_square(end_index)
         piece        = start_square.get_piece()
 
         if not self.is_legal_move(start_index, end_index):
-            print("NOT LEGAL")
+            print("ERROR Piece on index {} moving to index {} NOT LEGAL".format(start_index, end_index))
             return
 
         # Check capture
@@ -80,7 +83,6 @@ class GameState:
         if end_square.is_empty():
             # If en passant capture
             if piece.notation == "P" and end_index == self.en_passant:
-                en_passant_capture = True
                 if piece.player == "W":
                     captured_index = end_index + 8
                 else:
@@ -91,7 +93,7 @@ class GameState:
             captured_piece = self.capture_piece(end_index)
             
         # Move
-        self.move_piece(start_index, end_index)
+        start_square.move_piece(end_square)
         
         # Castle move check
         if piece.notation == "K" and abs(start_index - end_index) == 2:
@@ -99,6 +101,7 @@ class GameState:
             self.castle_move(castle_index)
 
         # Update GameState
+        self.next_turn()
         self.update_game_state(piece, start_index, end_index, captured_piece)
 
 
@@ -108,35 +111,35 @@ class GameState:
             start_index,
             end_index,
             captured_piece,
-            self.castling,
-            self.en_passant,
-            False,
+            None # ! ADD CHECK
         )
         self.move_history.append(move_obj)
+        print(self.current_FEN)
+        
 
+    def undo_move(self):
+        if len(self.move_history) > 0:
+            last_move     = self.move_history.pop()
+            current_index = last_move.end
+            prev_index    = last_move.start
+            
+            current_square = self.get_square(current_index)
+            prev_square    = self.get_square(prev_index)
+            current_square.undo_move_piece(prev_square)
+            
+            captured_piece = last_move.captured
+            if captured_piece:
+                captured_square = self.get_square(captured_piece.index)
+                captured_square.set_piece(captured_piece)
+            
+            last_FEN = self.FEN_history.pop()
+            last_FEN.load_FEN_string(self)
         
     def is_legal_move(self, start_index, end_index):
         # ! Only putting moves, not checking if legal
         return end_index in move.Move.moves(self, start_index)
     
-    def move_piece(self, start_index, end_index):
-        """Move piece on start_index to end_index
 
-        Args:
-            start_index (int): index of piece
-            end_index (int): index of target square
-        """        
-        start_square = self.get_square(start_index)
-        end_square = self.get_square(end_index)
-        piece = start_square.get_piece()
-
-        # Update squares
-        start_square.remove_piece()
-        end_square.set_piece(piece)
-
-        # Update Piece
-        piece.move(end_index)
-        self.check_pawn_promotion(end_index)
 
     def capture_piece(self, captured_index):
         """Remove captured piece on captured index and return it
@@ -153,17 +156,6 @@ class GameState:
         square.remove_piece()
         return piece
     
-    def check_pawn_promotion(self, index):
-        """Checks if piece is pawn and eligible to promote.  If so, promotes to Queen.
-
-        Args:
-            index (int): index of piece
-        """        
-        square = self.get_square(index)
-        piece = square.get_piece()
-        if piece.notation == "P":
-            if index in piece_constants.FIRST_RANK_INDEXES or index in piece_constants.EIGHT_RANK_INDEXES:
-                square.promote_pawn(index, "Q")
     
 
     def castle_move(self, end_index):
@@ -182,27 +174,24 @@ class GameState:
     Used for updating GameState after move
     """
     def update_game_state(self, piece, start_index, end_index, captured_piece):
-        self.history_count += 1
-        self.update_turn()
         self.update_en_passant(piece, start_index, end_index)
         self.update_castling(piece)
         self.update_halfmove(piece, captured_piece)
         self.update_FEN()
-
-    def update_turn(self, undo=False):
-        # ! NEEDS TO UPDATE TURN COUNT
-        """        
-        if undo:
-            self.turn_count -= 1
-        else:
-            self.turn_count += 1"""
-        self.turn = "w" if self.turn == "b" else "b"
+    
+    def next_turn(self):
+        self.turn_count += 1
+        self.turn = 'w' if self.turn == 'b' else 'b'
+        self.fullmove_count == (self.turn_count // 2) + 1
+            
 
     def update_en_passant(self, piece, start_index, end_index):
         if piece.notation == "P":
             # Adds en passant when pawn moves forward twice
             if abs(start_index - end_index) == 16:
                 self.en_passant = (start_index + end_index) // 2
+            else:
+                self.en_passant = None
         else:
             self.en_passant = None
 
@@ -242,7 +231,9 @@ class GameState:
             self.halfmove_count += 1
 
     def update_FEN(self):
-        self.current_FEN = FEN_util.FEN.create_FEN_string(self)
+        self.FEN_history.append(self.current_FEN)
+        new_FEN = FEN_util.FEN.create_FEN_string(self)
+        self.current_FEN = new_FEN
 
     # Unicode representation of board
     def __str__(self):

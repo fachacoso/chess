@@ -41,11 +41,17 @@ class FEN:
         self.halfmove_count = self.read_halfmove_count(halfmove_count_string)
         self.fullmove_count = self.read_fullmove_count(fullmove_count_string)
         
-    @classmethod
-    def load_FEN_string(cls, game_state, FEN_string):
+        self.turn_count = self.create_turn_count()
+
+    def load_FEN_string(self, game_state):
         ''' Load GameState attributes from FEN_string '''
-        game_state.current_FEN = FEN(FEN_string)
-        game_state.__dict__.update(game_state.current_FEN.__dict__)
+        game_state.current_FEN = self
+        game_state.__dict__.update(game_state.current_FEN.__dict__)  
+        
+    def create_turn_count(self):
+        turn_info = 0 if self.turn == 'w' else 1
+        fullmove_info = (self.fullmove_count * 2) - 2
+        return turn_info + fullmove_info
     
     def __str__(self):
         return self.FEN_string
@@ -70,17 +76,17 @@ class FEN:
         for char in piece_placement:
             if char.isupper():
                 piece  = INSTANCE_NOTATION_DICTIONARY[char]
-                square = Square(piece(current_index, "w"))
+                square = Square(current_index, piece(current_index, "w"))
                 current_rank.append(square)
                 current_index += 1
             elif char.islower():
                 piece  = INSTANCE_NOTATION_DICTIONARY[char.upper()]
-                square = Square(piece(current_index, "b"))
+                square = Square(current_index, piece(current_index, "b"))
                 current_rank.append(square)
                 current_index += 1
             elif char.isnumeric():
                 for i in range(int(char)):
-                    current_rank.append(Square())
+                    current_rank.append(Square(current_index))
                     current_index += 1
             else:
                 position_stack.append(current_rank)

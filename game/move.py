@@ -3,13 +3,11 @@ import util.utils as util
 
 # Class for a movement in a chess game
 class Move:
-    def __init__(self, piece, start_index, end_index, captured_piece, castling, en_passant, check):
+    def __init__(self, piece, start_index, end_index, captured_piece, check):
         self.piece      = piece
         self.start      = start_index
         self.end        = end_index
         self.captured   = captured_piece
-        self.castling   = castling
-        self.en_passant = en_passant
         self.check      = NotImplemented
         print(self.__str__())
         

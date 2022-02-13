@@ -48,6 +48,10 @@ class Piece(ABC):
     def move(self, new_index):
         self.index = new_index
         self.move_count += 1
+        
+    def undo_last_move(self, old_index):
+        self.index = old_index
+        self.move_count -= 1
              
     def same_team(self, target_square):
         return self.player == target_square.get_piece().player

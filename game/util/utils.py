@@ -9,7 +9,7 @@ def coordinate_to_index(coordinate):
     47
     """
     file_num, rank = coordinate
-    return constants.FILE_TO_NUM_DICTIONARY[file_num] + rank * 8 - 1
+    return constants.FILE_TO_NUM_DICTIONARY[file_num] + int(rank) * 8 - 1
 
 def index_to_coordinate(index):
     """Takes index and returns coordinate

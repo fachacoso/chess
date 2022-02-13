@@ -12,7 +12,7 @@ forward_double_pawn_FEN = 'rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq 
 
 pawn_capture_FEN_1 = 'rnbqkbnr/pp1p1ppp/2p5/3Pp3/8/8/PPP1PPPP/RNBQKBNR w KQkq e6 0 2'
 # pawn to e5
-pawn_capture_FEN_2 = 'rnbqkbnr/pp1p1ppp/2p5/3Pp3/8/8/PPP1PPPP/RNBQKBNR w KQkq e6 0 2'
+pawn_capture_FEN_2 = 'rnbqkbnr/pp1p1ppp/2P5/4p3/8/8/PPP1PPPP/RNBQKBNR b KQkq - 0 2'
 pawn_en_passant_FEN = 'rnbqkbnr/pp1p1ppp/2p1P3/8/8/8/PPP1PPPP/RNBQKBNR b KQkq - 0 2'
 
 """

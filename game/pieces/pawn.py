@@ -1,7 +1,6 @@
 import pieces.piece as piece
 import pieces.piece_constants as piece_constants
 
-
 class Pawn(piece.Piece):
     """
     Represents pawn piece.  Inherits from base Piece class.
