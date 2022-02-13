@@ -94,3 +94,24 @@ class Pawn(piece.Piece):
             elif game_state.en_passant == target_index:
                 moves.append(target_index)
         return moves
+
+    def get_attacking_squares(self, game_state = None):
+        attacking_square_list = []
+        direction_max = piece_constants.NUM_SQUARES_TO_EDGE[self.index]
+        num_north, num_south, num_east, num_west = direction_max[:4]
+        direction_max       = piece_constants.NUM_SQUARES_TO_EDGE[self.index]
+        if self.player == "w":
+            if num_north > 0:
+                if num_east > 0:
+                    attacking_square_list.append(self.index + 7)
+                if num_west > 0:
+                    attacking_square_list.append(self.index + 9)
+        else:
+            if num_south > 0:
+                forward_offset = -8
+                if num_east > 0:
+                    attacking_square_list.append(self.index - 9)
+                if num_west > 0:
+                    attacking_square_list.append(self.index - 7)
+        return attacking_square_list
+            

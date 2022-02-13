@@ -60,19 +60,31 @@ class GameState:
         # Initializes starting board using FEN notation string
         current_FEN = FEN_util.FEN(FEN_string)
         current_FEN.load_FEN_string(self)
-        self.FEN_history   = []
-        self.move_history  = []
-        self.history_count = 0
-        self.captured      = []
+        self.FEN_history      = []
+        self.move_history     = []
+        self.history_count    = 0
+        self.captured         = []
+        self.attacked_squares = []
+        for square in self.board:
+            if not square.is_empty():
+                piece = square.get_piece()
+                if piece.notation == 'K':
+                    if piece.player == 'w':
+                        self.white_king_index = piece.index
+                    else: 
+                        self.white_black_index = piece.index
         
-    def clone_game_state(self):
-        return GameState(self.current_FEN)
         
     # Move methods
     def make_move(self, start_index, end_index):
         start_square = self.get_square(start_index)
         end_square   = self.get_square(end_index)
         piece        = start_square.get_piece()
+
+        if start_square.is_empty():
+            print("ERROR No piece on index {}".format(start_index))
+            return
+            
 
         if not self.is_legal_move(start_index, end_index):
             print("ERROR Piece on index {} moving to index {} NOT LEGAL".format(start_index, end_index))
@@ -137,7 +149,7 @@ class GameState:
         
     def is_legal_move(self, start_index, end_index):
         # ! Only putting moves, not checking if legal
-        return end_index in move.Move.moves(self, start_index)
+        return end_index in move.Move.get_moves(self, start_index)
     
 
 

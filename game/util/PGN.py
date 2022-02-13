@@ -1,13 +1,48 @@
-from game_state import GameState
-from move import Move
+import util.utils as util
 
 
 class PGN:
-    def parse_PGN(string):
-        NotImplemented
+    @classmethod    
+    def create_PGN_string(cls, move_object):
+        # ! CASTLING 
+        castling = ''
+        castling_bool = False
+        if castling_bool:
+            #if queen side castle
+            return 'O-O'
+            #if king side castle
+            return 'O-O-O'
+        
+        # Notation of piece
+        notation = move_object.piece.notation
+        if notation == 'P':
+            notation = ''
+            
+        # If piece was captured
+        capture = ''
+        if move_object.captured:
+            if move_object.piece.notation == 'P':
+                capture = util.index_to_coordinate(move_object.start)[0]
+            capture += 'x'
 
+        # Coordinate of where the piece ends
+        coordinate = util.index_to_coordinate(move_object.end)
+        
+        # If in check
+        check = ''
+        if move_object.check:
+            check = '+'
+            
+        return notation + capture + coordinate + check
+    
+    @classmethod
+    def load_moves_from_PGN(cls, game_state, PGN_string):
+        """Makes all moves in PGN_string in game state
 
-    def load_PGN(self, PGN_string):
+        Args:
+            game_state (GameState()): current game state
+            PGN_string (string): PGN notation of all moves
+        """        
         PGN_moves = []
         
         pgn_list = PGN_string.split()
@@ -17,19 +52,39 @@ class PGN:
                 continue
             
         return PGN_moves
+    
+    @classmethod
+    def parse_PGN(cls, string):
+        """
+
+        Args:
+            game_state (GameState()): current game state
+            PGN_string (string): PGN notation of all moves
+        """    
+        NotImplemented
                 
-        
-    def move_from_PGN(self, PGN_string):
+    @classmethod    
+    def move_from_PGN(cls, PGN_string):
         NotImplemented
         # return start_index, end_index
         
-        
-    def get_PGN(self):
+    @classmethod    
+    def PGN_string_of_game(cls, game_state):
+        """Create string containing PGN of moves in game
+
+        Args:
+            game_state (game_state): current game_state
+
+        Returns:
+            [string]: String of all PGN notation of moves
+        """        
         pgn_string = ''
         turn = 0
-        for i in range(self.turn_counter):
+        for i in range(game_state.turn_counter):
             if turn % 2 == 0:
                 pgn_string += (turn % 2) + 1
                 pgn_string += ' '
-            pgn_string += self.move_history[i].__str__()
+            pgn_string += game_state.move_history[i].__str__()
         return pgn_string
+    
+    

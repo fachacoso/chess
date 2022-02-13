@@ -37,8 +37,11 @@ class Piece(ABC):
         self.move_count = move_count
     
     @abstractmethod 
-    def get_moves(game_state):
+    def get_moves(cls, game_state):
         pass
+    
+    def get_attacking_squares(self, game_state):
+        return self.get_moves(game_state)
         
     def has_moved(self):
         if self.move_count > 0:
