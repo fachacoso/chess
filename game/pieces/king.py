@@ -29,7 +29,6 @@ class King(piece.Piece):
 
         # Castling
         moves.extend(self.castle_moves(game_state))
-        print(moves)
         
         return moves
 
@@ -64,33 +63,25 @@ class King(piece.Piece):
                 start_index       = piece_constants.WHITE_KING_INDEX
                 end_index         = piece_constants.WHITE_ROOK_K_INDEX
                 king_target_index = 6
-                if self.piece_in_between(game_state, start_index, end_index):
+                if self.piece_in_between(game_state, 1, start_index, end_index):
                     moves.append(king_target_index)
             if wQ_castle:
                 start_index       = piece_constants.WHITE_ROOK_Q_INDEX
                 end_index         = piece_constants.WHITE_KING_INDEX
                 king_target_index = 2
-                if self.piece_in_between(game_state, start_index, end_index):
+                if self.piece_in_between(game_state, 1, start_index, end_index):
                     moves.append(king_target_index)
         else:
             if bK_castle:
                 start_index       = piece_constants.BLACK_KING_INDEX
                 end_index         = piece_constants.BLACK_ROOK_K_INDEX
                 king_target_index = 62
-                if self.piece_in_between(game_state, start_index, end_index):
+                if self.piece_in_between(game_state, 1, start_index, end_index):
                     moves.append(king_target_index)
             if bQ_castle:
                 start_index       = piece_constants.BLACK_ROOK_Q_INDEX
                 end_index         = piece_constants.BLACK_KING_INDEX
                 king_target_index = 58
-                if self.piece_in_between(game_state, start_index, end_index):
+                if self.piece_in_between(game_state, 1, start_index, end_index):
                     moves.append(king_target_index)
         return moves
-    
-    def piece_in_between(self, game_state, start_index, end_index):
-        """Checks if there are any pieces between start_index and end_index"""
-        for square_index in range(start_index + 1, end_index):
-            between_square = game_state.get_square(square_index)
-            if not between_square.is_empty():
-                return False
-        return True

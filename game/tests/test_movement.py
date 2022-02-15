@@ -21,3 +21,11 @@ class TestPawnMovement:
         test_state = game_state.GameState(pawn_capture_FEN_1)
         test_state.make_move(35, 42)
         assert repr(test_state) == pawn_capture_FEN_2
+
+
+class TestMovementWithCoordinates:
+    def test_pawn_forward(self):
+        # Forward pawn movement
+        test_state = game_state.GameState()
+        test_state.make_move('d2', 'd3')
+        assert repr(test_state) == forward_pawn_FEN

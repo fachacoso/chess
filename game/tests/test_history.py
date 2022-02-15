@@ -10,7 +10,7 @@ import game_state
 from testing_constants import *
 
 class TestUndoMove:
-    def test_undo_pawn_forward(self):
+    def test_undo_pawn_forward_shows_correct_FEN(self):
         test_state = game_state.GameState()
         test_state.make_move(11, 19)
         test_state.undo_move()
@@ -33,3 +33,31 @@ class TestUndoMove:
         test_state.undo_move()
         assert repr(test_state) == starting_FEN
     
+    def test_undo_attribute_attacking_squares(self):
+        test_state_1 = game_state.GameState()
+        test_state_1.make_move(11, 19)
+        test_state_1.undo_move()
+        
+        test_state_2 = game_state.GameState()
+        print(test_state_1.__dict__.keys())
+        assert test_state_1.__dict__['attacked_squares'] == test_state_2.__dict__['attacked_squares']  
+        
+    def test_undo_attribute_turn(self):
+        test_state_1 = game_state.GameState()
+        test_state_1.make_move(11, 19)
+        test_state_1.undo_move()
+        
+        test_state_2 = game_state.GameState()
+        print(test_state_1.__dict__.keys())
+        assert test_state_1.__dict__['turn'] == test_state_2.__dict__['turn']
+        
+    def test_undo_attribute_board(self):
+        test_state_1 = game_state.GameState()
+        test_state_1.make_move(11, 19)
+        test_state_1.undo_move()
+        
+        test_state_2 = game_state.GameState()
+        print(test_state_1.__dict__.keys())
+        assert str(test_state_1.__dict__['board']) == str(test_state_2.__dict__['board'])
+        
+        
