@@ -44,6 +44,7 @@ class King(piece.Piece):
                 if not target_square.is_empty():
                     # If target piece player is same, it's blocked
                     if self.same_team(target_square):
+                        self.defended_squares.append(target_index)
                         continue
                     # If target piece player is different, it's captured
                     else:
@@ -85,3 +86,21 @@ class King(piece.Piece):
                 if self.piece_in_between(game_state, 1, start_index, end_index):
                     moves.append(king_target_index)
         return moves
+    
+    def enemy_piece_around(self, game_state):
+        valid_direction_indexes = []
+        for direction_index in self.direction_indexes:
+            direction_max = piece_constants.NUM_SQUARES_TO_EDGE[self.index][direction_index]
+            if direction_max > 0:
+                valid_direction_indexes.append(direction_index)
+                
+        valid_offsets = [piece_constants.SLIDING_OFFSETS[index] for index in valid_direction_indexes]
+        indexes_around = [self.index + offset for offset in valid_offsets]
+        
+        for index in indexes_around:
+            square = game_state.get_square(index)
+            if not square.is_empty():
+                piece = square.get_piece()
+                if piece.player != self.player:
+                    return True
+        return False

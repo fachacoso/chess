@@ -90,6 +90,8 @@ class Pawn(piece.Piece):
             if not target_square.is_empty():
                 if not self.same_team(target_square):
                     moves.append(target_index)
+                else:
+                    self.defended_squares.append(target_index)
             # Check for en passant
             elif game_state.en_passant == target_index:
                 moves.append(target_index)

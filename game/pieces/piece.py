@@ -35,9 +35,10 @@ class Piece(ABC):
     direction_indexes = [0, 1, 2, 3, 4, 5, 6, 7]
 
     def __init__(self, index, player, move_count = 0):
-        self.index      = index
-        self.player     = player
-        self.move_count = move_count
+        self.index            = index
+        self.player           = player
+        self.move_count       = move_count
+        self.defended_squares = []
     
     @abstractmethod 
     def get_moves(cls, game_state):
@@ -84,5 +85,5 @@ class Piece(ABC):
             return self.notation.lower()
 
 
-
+    
 

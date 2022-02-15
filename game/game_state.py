@@ -72,10 +72,15 @@ class GameState:
                     else: 
                         self.black_king_index = piece.index
                         
-        self.attacked_squares = move.Move.get_attacked_squares(self)
-        self.pinned_lines = move.Move.get_pinned_lines(self)
-        self.is_check = move.Move.is_check(self)
+        self.attacked_squares     = move.Move.get_attacked_squares(self)
+        self.pinned_lines         = move.Move.get_pinned_lines(self)
+        self.checking_piece_index = move.Move.get_checking_piece_index(self)
+        self.defended_squares     = move.Move.get_defended_squares(self)
+        self.legal_moves          = move.Move.get_all_legal_moves(self)
         
+        
+        self.game_over = self.check_game_over()
+
         
     # Move methods
     def make_move(self, start_index, end_index):
@@ -86,16 +91,22 @@ class GameState:
         end_square   = self.get_square(end_index)
         piece        = start_square.get_piece()
         
-        non_FEN_attributes = {'attacked_squares': self.attacked_squares}
+        # ? Can I just put the dictionary in move?
+        non_FEN_attributes = {'attacked_squares': self.attacked_squares,
+                              'pinned_lines': self.pinned_lines,
+                              'checking_piece_index': self.checking_piece_index,
+                              'legal_moves': self.legal_moves,
+                              'defended_squares': self.defended_squares
+                              }
 
         if start_square.is_empty():
             print("ERROR No piece on index {}".format(start_index))
-            return
+            return False
             
 
-        if not self.is_legal_move(start_index, end_index):
+        if not move.Move.is_legal_move(self, start_index, end_index):
             print("ERROR Piece on index {} moving to index {} NOT LEGAL".format(start_index, end_index))
-            return
+            return False
 
         # Check capture
         captured_piece = None
@@ -122,6 +133,7 @@ class GameState:
         # Update GameState
         self.next_turn()
         self.update_game_state(piece, start_index, end_index, captured_piece)
+        self.check_game_over()
 
 
         # Create Move Instance
@@ -130,11 +142,12 @@ class GameState:
             start_index,
             end_index,
             captured_piece,
-            self.is_check,
+            self.checking_piece_index,
             non_FEN_attributes
         )
         self.move_history.append(move_obj)
         
+        return True
 
     def undo_move(self):
         if len(self.move_history) > 0:
@@ -155,10 +168,19 @@ class GameState:
             last_FEN.load_FEN_string(self)
             
             self.__dict__.update(last_move.non_FEN_attributes)
+            
+            
+    def check_game_over(self):
+        if len(self.legal_moves) == 0:
+            if type(self.checking_piece_index) == int:
+                self.game_over = 'Checkmate'
+            else:
+                self.game_over = 'Stalemate'
+            print('Game over! {}'.format(self.game_over))
+        else:
+            self.game_over = ''
         
-    def is_legal_move(self, start_index, end_index):
-        return end_index in move.Move.get_legal_moves(self, start_index)
-    
+
 
 
     def capture_piece(self, captured_index):
@@ -199,7 +221,9 @@ class GameState:
         self.update_FEN()
         self.update_attacked_squares()
         self.update_pinned_lines()
-        self.update_is_check()
+        self.update_checking_piece_index()
+        self.update_legal_moves()
+        self.update_defended_squares()
     
     def next_turn(self):
         self.turn_count += 1
@@ -263,8 +287,14 @@ class GameState:
     def update_pinned_lines(self):
         self.pinned_lines = move.Move.get_pinned_lines(self)
         
-    def update_is_check(self):
-        self.is_check = move.Move.is_check(self)
+    def update_checking_piece_index(self):
+        self.checking_piece_index = move.Move.get_checking_piece_index(self)
+        
+    def update_legal_moves(self):
+        self.legal_moves = move.Move.get_all_legal_moves(self)
+        
+    def update_defended_squares(self):
+        self.defended_squares = move.Move.get_defended_squares(self)
         
 
     # Unicode representation of board

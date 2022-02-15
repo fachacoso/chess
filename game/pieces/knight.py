@@ -38,6 +38,8 @@ class Knight(piece.Piece):
                     if not target_square.is_empty():
                         if not piece.same_team(target_square):
                             moves.append(target_index)
+                        else:
+                            self.defended_squares.append(target_index)
                     else:
                         moves.append(target_index)
                 offset_index += 1

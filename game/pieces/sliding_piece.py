@@ -18,7 +18,8 @@ class SlidingPiece(piece.Piece):
     get_moves(self, game_state)
         gets possible moves for sliding piece
     """
-
+    
+    direction_indexes = [0, 1, 2, 3, 4, 5, 6, 7]
     notation          = None
     white_sliding_pieces = []
     black_sliding_pieces = []
@@ -26,6 +27,7 @@ class SlidingPiece(piece.Piece):
     def __init__(self, index, player, move_count = 0):
         Piece.__init__(self, index, player, move_count)
         self.pinned_line = []
+        self.pinned_line_offset = []
         if player == 'w':
             SlidingPiece.white_sliding_pieces.append(self)
         else:
@@ -51,8 +53,8 @@ class SlidingPiece(piece.Piece):
             king_line = []
 
             # For max length of each direction
-            for i in range(direction_max):
-                target_index = self.index + offset * (i + 1)
+            for index in range(direction_max):
+                target_index = self.index + offset * (index + 1)
                 target_square = game_state.get_square(target_index)
                 
                 if not blocked:
@@ -64,13 +66,28 @@ class SlidingPiece(piece.Piece):
                         # If target piece player is different, piece is blocked AND can capture
                         if not piece.same_team(target_square):
                             moves.append(target_index)
+                        else:
+                            self.defended_squares.append(target_index)
                             
                 if not seen_king:           
-                    if blocked and not target_square.is_empty() and target_index == king_index:          
+                    if not target_square.is_empty() and target_index == king_index:          
                         # If king is seen, set the list of indices to pinned_line            
                         self.pinned_line = king_line
+                        self.pinned_line_offset = offset
                         seen_king == True
                         continue
                     else:
                         king_line.append(target_index)
         return moves
+    
+    
+    def line_to_king(self):
+        indexes_of_line = []
+        offset = self.pinned_line_offset
+        direction_index = piece_constants.SLIDING_OFFSETS.index(offset)
+        direction_max = piece_constants.NUM_SQUARES_TO_EDGE[self.index][direction_index]
+        for index in range(direction_max):
+            target_index = self.index + offset * (index + 1)
+            indexes_of_line.append(target_index)
+        return indexes_of_line
+        

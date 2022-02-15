@@ -30,7 +30,7 @@ class PGN:
         
         # If in check
         check = ''
-        if move_object.check:
+        if type(move_object.checking_piece_index) == int:
             check = '+'
             
         return notation + capture + coordinate + check
