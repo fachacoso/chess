@@ -146,6 +146,7 @@ class GameState:
             non_FEN_attributes
         )
         self.move_history.append(move_obj)
+        print(self.current_FEN)
         
         return True
 
@@ -169,6 +170,7 @@ class GameState:
             
             self.__dict__.update(last_move.non_FEN_attributes)
             
+            print(self.current_FEN)
             
     def check_game_over(self):
         if len(self.legal_moves) == 0:
@@ -279,7 +281,7 @@ class GameState:
     def update_FEN(self):
         self.FEN_history.append(self.current_FEN)
         new_FEN = FEN_util.FEN.create_FEN_string(self)
-        self.current_FEN = new_FEN
+        self.current_FEN = FEN_util.FEN(new_FEN, self.board)
         
     def update_attacked_squares(self):
         self.attacked_squares = move.Move.get_attacked_squares(self)

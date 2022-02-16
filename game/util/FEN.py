@@ -17,7 +17,7 @@ class FEN:
     <Fullmove count>
     """
     
-    def __init__(self, FEN):
+    def __init__(self, FEN, board = None):
         """Initialize FEN object from FEN string
 
         Args:
@@ -34,7 +34,7 @@ class FEN:
         
         # Set attributes
         self.FEN_string     = FEN
-        self.board          = self.read_board(board_string)
+        self.board          = self.read_board(board_string) if board == None else board
         self.turn           = self.read_turn(turn_string)
         self.castling       = self.read_castling(castling_string)
         self.en_passant     = self.read_en_passant(en_passant_string)
@@ -46,7 +46,7 @@ class FEN:
     def load_FEN_string(self, game_state):
         ''' Load GameState attributes from FEN_string '''
         game_state.current_FEN = self
-        game_state.__dict__.update(game_state.current_FEN.__dict__)  
+        game_state.__dict__.update(game_state.current_FEN.__dict__)
         
     def create_turn_count(self):
         turn_info = 0 if self.turn == 'w' else 1

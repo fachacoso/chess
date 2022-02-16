@@ -35,27 +35,27 @@ class Move:
         
         attacked_squares_list = Move.get_attacked_squares_list(game_state.attacked_squares)
         
-        
-        is_check = type(game_state.checking_piece_index) == int
+        # King cannot capture defended squares
         if piece.notation == 'K':
             attacked_squares_list.extend(game_state.defended_squares)
+        
+        is_check = type(game_state.checking_piece_index) == int
         if is_check:
             checking_piece_square = game_state.get_square(game_state.checking_piece_index)
             checking_piece  = checking_piece_square.get_piece()
-            
-            if piece.notation != 'K':
-                for move in possible_moves:
-                    for pinning_index, pinned_line in game_state.pinned_lines.items():
-                        # If move will let the piece stay pinned, append
-                        if move in pinned_line or move == pinning_index:
-                            legal_moves.append(move)   
-                return legal_moves
-            else:
+            if piece.notation == 'K':
                 if isinstance(checking_piece, pieces.sliding_piece.SlidingPiece):
                     attacked_squares_list.extend(checking_piece.line_to_king())
                 for move in possible_moves:
                     if move not in attacked_squares_list:
                         legal_moves.append(move)
+                return legal_moves
+            else:
+                for move in possible_moves:
+                    for pinning_index, pinned_line in game_state.pinned_lines.items():
+                        # If move will let the piece stay pinned or capture pinning piece, append
+                        if move in pinned_line or move == pinning_index:
+                            legal_moves.append(move)   
                 return legal_moves
 
         # If piece is king, can only move to non-attacked square
@@ -64,15 +64,15 @@ class Move:
                 if move not in attacked_squares_list:
                     legal_moves.append(move)
             return legal_moves
-        
-        # If piece is pinned, can only move within the pinned_line
-        for pinning_index, pinned_line in game_state.pinned_lines.items():
-            if square_index in pinned_line:
-                for move in possible_moves:
-                    # If move will let the piece stay pinned, append
-                    if move in pinned_line or move == pinning_index:
-                        legal_moves.append(move)   
-                return legal_moves
+        else:
+            # If non-king piece is pinned, can only move within the pinned_line
+            for pinning_index, pinned_line in game_state.pinned_lines.items():
+                if square_index in pinned_line:
+                    for move in possible_moves:
+                        # If move will let the piece stay pinned, append
+                        if move in pinned_line or move == pinning_index:
+                            legal_moves.append(move)   
+                    return legal_moves
         return possible_moves
             
         
@@ -115,7 +115,6 @@ class Move:
                     legal_moves = Move.get_legal_moves(game_state, piece.index)
                     if len(legal_moves) > 0:
                         legal_moves_dictionary[piece.index] = legal_moves
-        print(legal_moves_dictionary)
         return legal_moves_dictionary
     
     @classmethod

@@ -17,6 +17,23 @@ class TestUndoMove:
         assert repr(test_state) == starting_FEN
         
         
+    def test_undo_two_moves(self):
+        test_state = game_state.GameState()
+        test_state.make_move('c2', 'c4')
+        test_state.make_move('c7', 'c5')
+        test_state.undo_move()
+        test_state.undo_move()
+        assert repr(test_state) == starting_FEN
+        
+    def test_undo_two_moves_then_make_move(self):
+        test_state = game_state.GameState()
+        test_state.make_move('c2', 'c4')
+        test_state.make_move('c7', 'c5')
+        test_state.undo_move()
+        test_state.undo_move()
+        test_state.make_move('d2', 'd3')
+        assert repr(test_state) == forward_pawn_FEN
+        
     def test_undo_pawn_forward_another_time(self):
         test_state = game_state.GameState()
         test_state.make_move(11, 19)
