@@ -79,7 +79,12 @@ class TestSlidingPiecePinnedAttribute:
         expected = test_fen
         assert actual == expected
         
-        
+    def test_sliding_piece_direct_check(self):
+        test_fen = 'rnbqkbnr/pppQ1ppp/8/4P3/4p3/8/PPP2PPP/RNB1KBNR b KQkq - 0 1'
+        test_state = game_state.GameState(test_fen)
+        actual = test_state.pinned_lines
+        expected = {51: [60]}
+        assert actual == expected
         
         
 class TestCheck:
@@ -116,9 +121,33 @@ class TestCheck:
         test_state.make_move('b5', 'c6')
         assert type(test_state.checking_piece_index) == int
         
+    def test_king_cant_capture_defended(self):
+        test_fen = 'rnbqkbnr/pp4pp/2pP4/4Pp2/8/8/PPP2PPP/RNBQKBNR w KQkq - 0 1'
+        test_state = game_state.GameState(test_fen)
+        assert test_state.make_move('d6', 'd7')
+        assert not test_state.make_move('e8', 'd7')
+        
+    def test_capture_pinned_piece_next_to_king(self):
+        test_fen = 'rnbqkbnr/pp1Q2pp/2p5/4Pp2/8/8/PPP2PPP/RNB1KBNR b KQkq - 0 1'
+        test_state = game_state.GameState(test_fen)
+        assert test_state.make_move('c8', 'd7')
+        
+    def test_capture_pinned_piece_next_to_king_2(self):
+        test_fen = 'rnb2Bn1/pp1q1k1r/2p3p1/4Pp2/7P/8/PPP2PP1/RN2KBNR w KQ - 0 1'
+        test_state = game_state.GameState(test_fen)
+        assert test_state.make_move('f8', 'e7')
+        
+        
+    def test_capture_pinned_piece_next_to_king_3(self):
+        test_fen = 'rnbqkbnr/pp1Q2pp/2p5/4Pp2/8/8/PPP2PPP/RNB1KBNR b KQkq - 0 1'
+        test_state = game_state.GameState(test_fen)
+        assert test_state.make_move('e8', 'd7')
+        assert test_state.make_move('e5', 'e6')
+        assert test_state.make_move('d7', 'e8')
+        assert test_state.make_move('e6', 'e7')
+        
         
     def test_cannot_castle(self):
         NotImplemented
-        
         
         

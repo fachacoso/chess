@@ -56,7 +56,6 @@ class TestUndoMove:
         test_state_1.undo_move()
         
         test_state_2 = game_state.GameState()
-        print(test_state_1.__dict__.keys())
         assert test_state_1.__dict__['attacked_squares'] == test_state_2.__dict__['attacked_squares']  
         
     def test_undo_attribute_turn(self):
@@ -65,7 +64,6 @@ class TestUndoMove:
         test_state_1.undo_move()
         
         test_state_2 = game_state.GameState()
-        print(test_state_1.__dict__.keys())
         assert test_state_1.__dict__['turn'] == test_state_2.__dict__['turn']
         
     def test_undo_attribute_board(self):
@@ -74,7 +72,6 @@ class TestUndoMove:
         test_state_1.undo_move()
         
         test_state_2 = game_state.GameState()
-        print(test_state_1.__dict__.keys())
         assert str(test_state_1.__dict__['board']) == str(test_state_2.__dict__['board'])
         
         
