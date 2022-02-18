@@ -51,11 +51,18 @@ class Move:
                         legal_moves.append(move)
                 return legal_moves
             else:
-                for move in possible_moves:
-                    for pinning_index, pinned_line in game_state.pinned_lines.items():
-                        # If move will let the piece stay pinned or capture pinning piece, append
-                        if move in pinned_line or move == pinning_index:
-                            legal_moves.append(move)   
+                if isinstance(checking_piece, pieces.sliding_piece.SlidingPiece):
+                    for move in possible_moves:
+                        for pinning_index, pinned_line in game_state.pinned_lines.items():
+                            # If move will let the piece stay pinned or capture pinning piece, append
+                            if move in pinned_line or move == pinning_index:
+                                legal_moves.append(move)
+                        if move == game_state.checking_piece_index:
+                                legal_moves.append(move)
+                else:
+                    for move in possible_moves:
+                        if move == game_state.checking_piece_index:
+                            legal_moves.append(move)
                 return legal_moves
 
         # If piece is king, can only move to non-attacked square
@@ -164,3 +171,16 @@ class Move:
                         if len(piece.defended_squares) != 0:
                             defended_squares_list.extend(piece.defended_squares)
         return defended_squares_list
+    @classmethod
+    def reset_pinned_line(cls, game_state):
+        for square in game_state.board:
+            if not square.is_empty():
+                piece = square.get_piece()
+                if isinstance(piece, pieces.sliding_piece.SlidingPiece):
+                    piece.pinned_line = []
+    @classmethod
+    def reset_defended_pieces(cls, game_state):
+        for square in game_state.board:
+            if not square.is_empty():
+                piece = square.get_piece()        
+                piece.defended_squares = []

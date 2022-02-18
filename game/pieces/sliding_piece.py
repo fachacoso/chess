@@ -1,4 +1,3 @@
-from tkinter import E
 from pieces.piece import Piece
 import pieces.piece as piece
 import pieces.piece_constants as piece_constants

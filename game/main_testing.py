@@ -3,8 +3,6 @@ import numpy
 import game_state
 import constants
 
-import util.utils as util
-
 BOARD_SIZE = 1000
 SQUARE_SIZE = BOARD_SIZE // 8
 WINDOW = pygame.display.set_mode((BOARD_SIZE, BOARD_SIZE))
@@ -14,39 +12,15 @@ pygame.display.set_caption("Chess")
 LIGHT = (145, 130, 109)
 DARK = (108, 82, 59)
 
-def play_board_states(game_state, depth):
-    legal_moves = []
-    for index, legal_move_list in game_state.legal_moves.items():
-        for move in legal_move_list:
-            legal_moves.append([index, move])
-            
-    possible_move_count = 0
-    for move in legal_moves:
-        start = move[0]
-        end = move[1]
-        game_state.make_move(start, end)
-        print('Depth of {}.  Move {} on {} to {}'.format(depth,
-                                                        game_state.get_square(start).get_piece(), 
-                                                        util.index_to_coordinate(start), 
-                                                        util.index_to_coordinate(end)))
-        
-        if depth == 1:
-            possible_move_count += 1
-        else:
-            possible_move_count += play_board_states(game_state, depth - 1)
-        game_state.undo_move()
-        
-    return possible_move_count
 
 def main():
     pygame.init()
     load_pieces()
-    game = game_state.GameState()
+    game = game_state.GameState('rnbqkbnr/pp1Q2pp/2p5/4Pp2/8/8/PPP2PPP/RNB1KBNR b KQkq - 0 1')
 
     # Game loop
     selected_index = None
     run = True
-    
     while run:
         for e in pygame.event.get():
             # Quits game
@@ -54,9 +28,25 @@ def main():
                 run = False
             # Mouse listening
             mouse_pos = pygame.mouse.get_pos()
-            
+            index_hovered = get_index(mouse_pos)
+            square_hovered = game.get_square(index_hovered)
+            if e.type == pygame.MOUSEBUTTONDOWN:
+                # If clicked on occupied square, hold selected piece (NEED TO ADD PLAYER CHECK)
+                if not square_hovered.is_empty():
+                    piece = square_hovered.get_piece()
+                    if piece.player == game.turn:
+                        reset_square(index_hovered)
+                        selected_index = index_hovered
+
+            # Lets go of piece
+            if e.type == pygame.MOUSEBUTTONUP and type(selected_index) == int:
+                if index_hovered != selected_index:
+                    game.make_move(selected_index, index_hovered)
+                selected_index = None
+                
             if e.type == pygame.KEYDOWN:
                 game.undo_move()
+
 
         # Updates each frame
         update_view(game, selected_index, mouse_pos)

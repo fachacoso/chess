@@ -96,7 +96,9 @@ class GameState:
                               'pinned_lines': self.pinned_lines,
                               'checking_piece_index': self.checking_piece_index,
                               'legal_moves': self.legal_moves,
-                              'defended_squares': self.defended_squares
+                              'defended_squares': self.defended_squares,
+                              'white_king_index': self.white_king_index,
+                              'black_king_index': self.black_king_index
                               }
 
         if start_square.is_empty():
@@ -146,7 +148,6 @@ class GameState:
             non_FEN_attributes
         )
         self.move_history.append(move_obj)
-        print(self.current_FEN)
         
         return True
 
@@ -170,7 +171,6 @@ class GameState:
             
             self.__dict__.update(last_move.non_FEN_attributes)
             
-            print(self.current_FEN)
             
     def check_game_over(self):
         if len(self.legal_moves) == 0:
@@ -224,8 +224,10 @@ class GameState:
         self.update_attacked_squares()
         self.update_pinned_lines()
         self.update_checking_piece_index()
-        self.update_legal_moves()
+        self.update_king_index(start_index, end_index)
         self.update_defended_squares()
+        self.update_legal_moves()
+        
     
     def next_turn(self):
         self.turn_count += 1
@@ -288,6 +290,7 @@ class GameState:
         
     def update_pinned_lines(self):
         self.pinned_lines = move.Move.get_pinned_lines(self)
+        move.Move.reset_pinned_line(self)
         
     def update_checking_piece_index(self):
         self.checking_piece_index = move.Move.get_checking_piece_index(self)
@@ -297,6 +300,14 @@ class GameState:
         
     def update_defended_squares(self):
         self.defended_squares = move.Move.get_defended_squares(self)
+        move.Move.reset_defended_pieces(self)
+        
+    def update_king_index(self, start, end):
+        if start == self.white_king_index:
+            self.white_king_index = end
+        elif start == self.black_king_index:
+            self.black_king_index = end
+            
         
 
     # Unicode representation of board
