@@ -1,6 +1,40 @@
 import constants
 
 class Square:
+    """
+    Class representing square in board in GameState
+
+    Attributes
+    ----------
+    piece : Piece
+        Piece contained in square - (P, R, N, B, Q, K)
+    index : int
+        Index of square in game_state
+    promoted_pawn : bool
+        
+
+    Methods
+    -------
+    get_piece(self)
+        Returns piece in square
+    
+    is_empty(self)
+        Returns True if a piece is in square
+     
+    move_piece(self, end_square)
+        Moves piece to end_square
+    
+    undo_move_piece(self, old_square)
+        Moves piece back to old_square
+    
+    set_piece(self, piece)
+        Set piece to square
+        
+    remove_piece(self)
+        Removes piece from square
+    
+    #! Pawn stuff
+    """
     # Initialize empty square
     def __init__(self, index, piece = None):
         self.piece = piece
@@ -8,12 +42,15 @@ class Square:
         self.promoted_pawn = None
     
     def get_piece(self):
+        """Returns piece in square"""
         return self.piece
 
     def is_empty(self):
+        """Returns True if a piece is in square"""
         return self.piece == None
     
     def move_piece(self, end_square):
+        """Moves piece to end_square"""
         piece = self.get_piece()
         
         # Update squares
@@ -29,17 +66,18 @@ class Square:
         """
                         
     def undo_move_piece(self, old_square):
+        """Moves piece back to old_square"""
         piece = self.get_piece()
         self.remove_piece()
         old_square.set_piece(piece)
         piece.undo_last_move(old_square.index)
         
-        
-    
     def set_piece(self, piece):
+        """Set piece to square"""
         self.piece = piece
         
     def remove_piece(self):
+        """Removes piece from square"""
         self.piece = None
         
     def promote_pawn(self, index, piece_notation):
@@ -61,7 +99,10 @@ class Square:
         if piece.notation == "P":
             if index in constants.FIRST_RANK_INDEXES or index in constants.EIGHT_RANK_INDEXES:
                 square.promote_pawn(index, "Q")
-    
+                
+    """
+    STRING REPRESENTATION
+    """
     # Unicode representation
     def __str__(self):
         if self.is_empty():

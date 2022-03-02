@@ -1,3 +1,4 @@
+from calendar import c
 import pieces.piece as piece
 import pieces.piece_constants as piece_constants
 
@@ -10,6 +11,9 @@ class King(piece.Piece):
     ----------
     cls.notation : str
         algebraic notation of King - K
+    
+    checked_line : lint[int]
+        List of indexes in between king and sliding enemy piece
 
 
     Methods
@@ -19,10 +23,14 @@ class King(piece.Piece):
     """
 
     notation = "K"
+    def __init__(self, index, player, move_count=0):
+        super().__init__(index, player, move_count)
+        self.checked_line = []
+        
 
-    def get_moves(self, game_state):
+    def update_movement_attributes(self, game_state):
         """Returns list of moves for King"""
-        moves  = []
+        moves = []
 
         # Standard moves
         moves.extend(self.standard_moves(game_state))
@@ -30,27 +38,39 @@ class King(piece.Piece):
         # Castling
         moves.extend(self.castle_moves(game_state))
         
-        return moves
+        self.possible_moves = moves
 
     def standard_moves(self, game_state):
-        """Returns list of moves of single spaced moves King can do"""
-        moves = []
+        """Returns list of possible moves and update attacked and defended squares"""
+        moves            = []
+        attacked_squares = []
+        defended_squares = []
+        
         for direction_index in self.direction_indexes:
             offset = piece_constants.SLIDING_OFFSETS[direction_index]
             direction_max = piece_constants.NUM_SQUARES_TO_EDGE[self.index][direction_index]
             if direction_max > 0:
                 target_index = self.index + offset
                 target_square = game_state.get_square(target_index)
+                
+                # If target square has piece
                 if not target_square.is_empty():
-                    # If target piece player is same, it's blocked
+                    # If target piece is same team, it's defended
                     if self.same_team(target_square):
-                        self.defended_squares.append(target_index)
-                        continue
-                    # If target piece player is different, it's captured
+                        defended_squares.append(target_index)
+                    # If target piece is different team, it's a possible move
                     else:
                         moves.append(target_index)
-                        continue
-                moves.append(target_index)
+                        
+                # If target square has NO piece
+                else:
+                    # Target square is attacked
+                    attacked_squares.append(target_index)
+                    # Target square is a possible move   
+                    moves.append(target_index)
+                    
+        self.attacked_squares = attacked_squares
+        self.defended_squares = defended_squares
         return moves
     
     def castle_moves(self, game_state):
@@ -88,6 +108,7 @@ class King(piece.Piece):
         return moves
     
     def enemy_piece_around(self, game_state):
+        """Returns if enemy piece is around self(the king)"""
         valid_direction_indexes = []
         for direction_index in self.direction_indexes:
             direction_max = piece_constants.NUM_SQUARES_TO_EDGE[self.index][direction_index]
@@ -104,3 +125,55 @@ class King(piece.Piece):
                 if piece.player != self.player:
                     return True
         return False
+    
+    def get_pinned_pieces(self, game_state):
+        """Returns list of pinned pieces and adds pinned_direction to pinned piece"""
+        pinned_pieces = []
+        opp = 'w' if game_state.turn == 'b' else 'b'
+        # Iterate over all directions
+        for direction_index in self.direction_indexes:
+            target_index = self.index 
+            offset =  piece_constants.SLIDING_OFFSETS[direction_index]
+            direction_max = piece_constants.NUM_SQUARES_TO_EDGE[self.index][direction_index]
+            
+            # Set elligible pinning pieces according to direction_index
+            if direction_index < 4:  
+                pinning_pieces = ['R', 'Q']
+            else:  
+                pinning_pieces = ['B', 'Q']
+            
+            possible_pin = None
+            possible_pin_line = []
+            # Iterate over all squares in a single direction to find possible_pin
+            for i in range(direction_max):
+                target_index = target_index + offset
+                square = game_state.get_square(target_index)
+                
+                possible_pin_line.append(target_index)
+                
+                # If square is not empty
+                if not square.is_empty():
+                    piece = square.get_piece()
+                    
+                    # If there IS NOT a possible pin candidate already
+                    if not possible_pin:
+                        # If opponent piece, no pin
+                        if piece.player == opp:
+                            break
+                        # If current player piece, possible pin
+                        else:
+                            possible_pin = target_index
+                            
+                    # If there IS a possible pin candidate already
+                    else:
+                        # If opponent piece
+                        if piece.player == opp:
+                            # If elligible sliding piece type, add to pinned
+                            if piece.notation in pinning_pieces:
+                                piece.pinned_line = possible_pin_line
+                                pinned_pieces.append(possible_pin)     
+                        # If current player piece, stop checking
+                        else:
+                            break
+
+        return pinned_pieces

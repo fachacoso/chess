@@ -5,12 +5,15 @@ import pieces.piece_constants as piece_constants
 
 class SlidingPiece(piece.Piece):
     """
-    Class for all sliding chess pieces (ie. Rook, Bishop, Queen)
+    Class for all sliding chess pieces (Rook, Bishop, and Queen)
 
     Attributes
     ----------
     notation : str
-        algebraic notation of piece - (R, B, Q)
+        Algebraic notation of piece - (R, B, Q)
+        
+    checking_offset : int
+        Offset pointing to direction of king if sliding piece is checking
 
     Methods
     -------
@@ -20,73 +23,61 @@ class SlidingPiece(piece.Piece):
     
     direction_indexes = [0, 1, 2, 3, 4, 5, 6, 7]
     notation          = None
-    white_sliding_pieces = []
-    black_sliding_pieces = []
     
     def __init__(self, index, player, move_count = 0):
         Piece.__init__(self, index, player, move_count)
-        self.pinned_line = []
-        self.pinned_line_offset = []
-        if player == 'w':
-            SlidingPiece.white_sliding_pieces.append(self)
-        else:
-            SlidingPiece.black_sliding_pieces.append(self)
-            
-    def get_moves(self, game_state):
-        """Returns list of moves for sliding piece"""
-        moves  = []
+        self.checking_offset = 0
+        
+
+    def update_movement_attributes(self, game_state):
+        """Updates possible moves, attacked squares, and defended squares"""
+        moves            = []
+        attacked_squares = []
+        defended_squares = []
+        
         square = game_state.get_square(self.index)
         piece  = square.get_piece()
-        if game_state.turn == 'w':
-            king_index = game_state.white_king_index
+        
+        if self.player == 'w':
+            enemy_king_index = game_state.black_king_index
         else:
-            king_index = game_state.black_king_index
+            enemy_king_index = game_state.white_king_index
 
         # For each direction
-        seen_king = False
         for direction_index in self.direction_indexes:
             offset = piece_constants.SLIDING_OFFSETS[direction_index]
             direction_max = piece_constants.NUM_SQUARES_TO_EDGE[self.index][direction_index]
-            
-            blocked = False
-            king_line = []
 
+            seen_king = False
             # For max length of each direction
             for index in range(direction_max):
                 target_index = self.index + offset * (index + 1)
                 target_square = game_state.get_square(target_index)
                 
-                if not blocked:
-                    # If target square empty, append
-                    if target_square.is_empty():
-                            moves.append(target_index)
-                    else:  
-                        blocked = True
-                        # If target piece player is different, piece is blocked AND can capture
-                        if not piece.same_team(target_square):
-                            moves.append(target_index)
-                        else:
-                            self.defended_squares.append(target_index)
-                            
-                if not seen_king:           
-                    if not target_square.is_empty() and target_index == king_index:          
-                        # If king is seen, set the list of indices to pinned_line            
-                        self.pinned_line = king_line
-                        self.pinned_line_offset = offset
-                        seen_king == True
-                        continue
+                # If target square has piece
+                if not target_square.is_empty():
+                    # If target piece is same team, it's defended
+                    if self.same_team(target_square):
+                        defended_squares.append(target_index)
+                        break
+                    # If target piece is different team, it's a possible move
                     else:
-                        king_line.append(target_index)
-        return moves
+                        moves.append(target_index)
+                        # If target piece is enemy king, square behind is also attacked
+                        if target_index == enemy_king_index:
+                            attacked_squares.append(enemy_king_index + offset)
+                            self.checking_offset = offset
+                        break
+                        
+                # If target square has NO piece
+                else:
+                    # Target square is attacked
+                    attacked_squares.append(target_index)
+                    # Target square is a possible move   
+                    moves.append(target_index)
+
+        self.attacked_squares = attacked_squares
+        self.defended_squares = defended_squares
+        self.possible_moves   = moves
     
     
-    def line_to_king(self):
-        indexes_of_line = []
-        offset = self.pinned_line_offset
-        direction_index = piece_constants.SLIDING_OFFSETS.index(offset)
-        direction_max = piece_constants.NUM_SQUARES_TO_EDGE[self.index][direction_index]
-        for index in range(direction_max):
-            target_index = self.index + offset * (index + 1)
-            indexes_of_line.append(target_index)
-        return indexes_of_line
-        

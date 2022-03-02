@@ -19,12 +19,12 @@ class Pawn(piece.Piece):
 
     notation = "P"
 
-    def get_moves(self, game_state):
+    def update_movement_attributes(self, game_state):
         """Returns list of moves for pawn"""
         moves  = []
 
         # Returns possible moves
-        forward_square_list, capture_square_list = self.possible_moves()
+        forward_square_list, capture_square_list = self.possible_indices()
 
         # Forward movement
         moves.extend(self.forward_moves(game_state, forward_square_list))
@@ -32,9 +32,10 @@ class Pawn(piece.Piece):
         # Captures
         moves.extend(self.capture_moves(game_state, capture_square_list))
         
-        return moves
+        self.possible_moves =  moves
 
-    def possible_moves(self):
+
+    def possible_indices(self):
         """Returns two lists containing possible target indexes for piece
 
         Returns:
@@ -75,6 +76,7 @@ class Pawn(piece.Piece):
         return forward_square_list, capture_square_list
 
     def forward_moves(self, game_state, forward_square_list):
+        """Returns possible forward moves"""
         moves = []
         for target_index in forward_square_list:
             target_square = game_state.get_square(target_index)
@@ -84,36 +86,33 @@ class Pawn(piece.Piece):
         return moves
 
     def capture_moves(self, game_state, capture_square_list):
-        moves = []
+        """Returns possible capture moves and updates attacked and defended squares"""
+        moves            = []
+        attacked_squares = []
+        defended_squares = []
+        
         for target_index in capture_square_list:
             target_square = game_state.get_square(target_index)
-            if not target_square.is_empty():
-                if not self.same_team(target_square):
-                    moves.append(target_index)
-                else:
-                    self.defended_squares.append(target_index)
-            # Check for en passant
-            elif game_state.en_passant == target_index:
-                moves.append(target_index)
-        return moves
-
-    def get_attacking_squares(self, game_state = None):
-        attacking_square_list = []
-        direction_max = piece_constants.NUM_SQUARES_TO_EDGE[self.index]
-        num_north, num_south, num_east, num_west = direction_max[:4]
-        direction_max       = piece_constants.NUM_SQUARES_TO_EDGE[self.index]
-        if self.player == "w":
-            if num_north > 0:
-                if num_east > 0:
-                    attacking_square_list.append(self.index + 7)
-                if num_west > 0:
-                    attacking_square_list.append(self.index + 9)
-        else:
-            if num_south > 0:
-                forward_offset = -8
-                if num_east > 0:
-                    attacking_square_list.append(self.index - 9)
-                if num_west > 0:
-                    attacking_square_list.append(self.index - 7)
-        return attacking_square_list
             
+            
+            # If target square has piece
+            if not target_square.is_empty():
+                # If target piece is same team, it's defended
+                if self.same_team(target_square):
+                    defended_squares.append(target_index)
+                # If target piece is different team, it's a possible move
+                else:
+                    moves.append(target_index)
+                    
+            # If target square has NO piece
+            else:
+                # Target square is attacked
+                attacked_squares.append(target_index)        
+                
+                # If target square is en_passant, it's a possible move
+                if game_state.en_passant == target_index:
+                    moves.append(target_index)
+                
+        self.attacked_squares = attacked_squares
+        self.defended_squares = defended_squares
+        return moves

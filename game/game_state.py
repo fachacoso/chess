@@ -1,4 +1,6 @@
 from msilib.schema import Error
+
+from numpy import RAISE
 import move
 import util.utils as util
 import util.FEN as FEN_util
@@ -17,20 +19,21 @@ class GameState:
         
     Attributes
     ----------
-    board : list[Square()] (64)
-        list of Square objects representing board
-    turn : str
-        player to move ('w' or 'b')
-    castling : list[bool] (4)
-        rights to castle
-    en_passant : int
-        target index for en passant
-    halfmove_count : int
-        count for halfmove
-    fullmove_count : int
-        count for fullmove
-    turn_count : int
-        count for each turn
+    FEN Attributes
+        board : list[Square()] (64)
+            list of Square objects representing board
+        turn : str
+            player to move ('w' or 'b')
+        castling : list[bool] (4)
+            rights to castle
+        en_passant : int
+            target index for en passant
+        halfmove_count : int
+            count for halfmove
+        fullmove_count : int
+            count for fullmove
+        turn_count : int
+            count for each turn
     current_FEN : FEN
         FEN object that represents current game state
     FEN_history : FEN[]
@@ -39,8 +42,16 @@ class GameState:
         list of previous moves
     history_count : int
         index of current board viewed, used for viewing previous moves
-    captured : list[Piece()]
-        list of pieces captured
+    attacked_squares : list[int]
+        squares being attacked by opponent
+    defended_squares : list[int]
+        squares containing enemy pieces current king cannot move to
+    checking_piece_list : list[Piece()] (2, 1, 0)
+        pieces checking current player's king
+    legal_moves : dic{ key = piece_index : val = list[target_index]}
+        dictionary  of all moves
+    game_over : str
+        'Checkmate' / 'Stalemate' / 'Draw'
     
     Methods
     -------
@@ -72,10 +83,7 @@ class GameState:
                     else: 
                         self.black_king_index = piece.index
                         
-        self.attacked_squares     = move.Move.get_attacked_squares(self)
-        self.pinned_lines         = move.Move.get_pinned_lines(self)
-        self.checking_piece_index = move.Move.get_checking_piece_index(self)
-        self.defended_squares     = move.Move.get_defended_squares(self)
+        self.attacked_squares, self.defended_squares, self.pinned, self.checking_pieces = move.Move.get_attacked_defended_pinned_check(self)
         self.legal_moves          = move.Move.get_all_legal_moves(self)
         
         
@@ -91,24 +99,21 @@ class GameState:
         end_square   = self.get_square(end_index)
         piece        = start_square.get_piece()
         
-        # ? Can I just put the dictionary in move?
         non_FEN_attributes = {'attacked_squares': self.attacked_squares,
-                              'pinned_lines': self.pinned_lines,
-                              'checking_piece_index': self.checking_piece_index,
-                              'legal_moves': self.legal_moves,
                               'defended_squares': self.defended_squares,
+                              'legal_moves'     : self.legal_moves,
                               'white_king_index': self.white_king_index,
                               'black_king_index': self.black_king_index
                               }
 
         if start_square.is_empty():
             print("ERROR No piece on index {}".format(start_index))
-            return False
+            raise Error
             
 
         if not move.Move.is_legal_move(self, start_index, end_index):
             print("ERROR Piece on index {} moving to index {} NOT LEGAL".format(start_index, end_index))
-            return False
+            raise Error
 
         # Check capture
         captured_piece = None
@@ -144,7 +149,7 @@ class GameState:
             start_index,
             end_index,
             captured_piece,
-            self.checking_piece_index,
+            self.checking_pieces,
             non_FEN_attributes
         )
         self.move_history.append(move_obj)
@@ -165,6 +170,7 @@ class GameState:
             if captured_piece:
                 captured_square = self.get_square(captured_piece.index)
                 captured_square.set_piece(captured_piece)
+                captured_piece.captured = False
             
             last_FEN = self.FEN_history.pop()
             last_FEN.load_FEN_string(self)
@@ -174,7 +180,7 @@ class GameState:
             
     def check_game_over(self):
         if len(self.legal_moves) == 0:
-            if type(self.checking_piece_index) == int:
+            if len(self.checking_pieces) > 0:
                 self.game_over = 'Checkmate'
             else:
                 self.game_over = 'Stalemate'
@@ -197,6 +203,7 @@ class GameState:
         square = self.get_square(captured_index)
         piece = square.get_piece()
         square.remove_piece()
+        piece.captured = True
         return piece
     
     
@@ -221,13 +228,9 @@ class GameState:
         self.update_castling(piece)
         self.update_halfmove(piece, captured_piece)
         self.update_FEN()
-        self.update_attacked_squares()
-        self.update_pinned_lines()
-        self.update_checking_piece_index()
         self.update_king_index(start_index, end_index)
-        self.update_defended_squares()
+        self.update_movement()
         self.update_legal_moves()
-        
     
     def next_turn(self):
         self.turn_count += 1
@@ -285,22 +288,9 @@ class GameState:
         new_FEN = FEN_util.FEN.create_FEN_string(self)
         self.current_FEN = FEN_util.FEN(new_FEN, self.board)
         
-    def update_attacked_squares(self):
-        self.attacked_squares = move.Move.get_attacked_squares(self)
-        
-    def update_pinned_lines(self):
-        self.pinned_lines = move.Move.get_pinned_lines(self)
-        move.Move.reset_pinned_line(self)
-        
-    def update_checking_piece_index(self):
-        self.checking_piece_index = move.Move.get_checking_piece_index(self)
-        
-    def update_legal_moves(self):
-        self.legal_moves = move.Move.get_all_legal_moves(self)
-        
-    def update_defended_squares(self):
-        self.defended_squares = move.Move.get_defended_squares(self)
-        move.Move.reset_defended_pieces(self)
+    def update_movement(self):
+        self.attacked_squares, self.defended_squares, self.pinned, self.checking_pieces = move.Move.get_attacked_defended_pinned_check(self)
+
         
     def update_king_index(self, start, end):
         if start == self.white_king_index:
@@ -308,8 +298,13 @@ class GameState:
         elif start == self.black_king_index:
             self.black_king_index = end
             
+    def update_legal_moves(self):
+        self.legal_moves = move.Move.get_all_legal_moves(self)
+            
         
-
+    """
+    STRING REPRESENTATION
+    """
     # Unicode representation of board
     def __str__(self):
         # ! unicode errors

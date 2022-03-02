@@ -53,6 +53,9 @@ class FEN:
         fullmove_info = (self.fullmove_count * 2) - 2
         return turn_info + fullmove_info
     
+    """
+    STRING REPRESENTATION
+    """
     def __str__(self):
         return self.FEN_string
 
