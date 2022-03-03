@@ -66,11 +66,8 @@ class TestSlidingPiecePinnedAttribute:
     def test_pinned_pawn_cant_move_forward(self, tear_down):
         test_fen = 'rnbqk1nr/pppppppp/8/8/1b1P4/2P1P3/PP3PPP/RNBQKBNR w KQkq - 0 1'
         test_state = game_state.GameState(test_fen)
-        try:
-            test_state.make_move('c3', 'c4')
-            assert False
-        except:
-            assert True
+        
+        assert not test_state.make_move('c3', 'c4')
             
         
 
@@ -78,11 +75,7 @@ class TestSlidingPiecePinnedAttribute:
     def test_pinned_pawn_with_broken_pin_can_move_forward(self, tear_down):
         test_fen = 'rnbqk1nr/pppppppp/8/8/1bPP4/4P3/PP1B1PPP/RN1QKBNR b KQkq - 0 1'
         test_state = game_state.GameState(test_fen)
-        try:
-            test_state.make_move('c3', 'c4')
-            assert False
-        except:
-            assert True
+        assert not test_state.make_move('c3', 'c4')
             
         
 class TestCheck:
@@ -111,11 +104,8 @@ class TestCheck:
     def test_pinned(self, tear_down):
         test_fen = 'rnbqkbnr/pp3ppp/2p5/1B1pp3/3PP3/8/PPP2PPP/RNBQK1NR b KQkq - 1 3'
         test_state = game_state.GameState(test_fen)
-        try:
-            test_state.make_move('c6', 'c5')
-            assert False
-        except:
-            assert True
+        
+        assert not test_state.make_move('c6', 'c5')
         
     def test_discovered(self, tear_down):
         test_fen = 'rnbqkbnr/pp3ppp/2p5/1B1pp3/3PP3/8/PPP2PPP/RNBQK1NR w KQkq - 1 3'
@@ -127,11 +117,8 @@ class TestCheck:
         test_fen = 'rnbqkbnr/pp4pp/2pP4/4Pp2/8/8/PPP2PPP/RNBQKBNR w KQkq - 0 1'
         test_state = game_state.GameState(test_fen)
         assert test_state.make_move('d6', 'd7')
-        try:
-            test_state.make_move('e8', 'd7')
-            assert False
-        except:
-            assert True
+        
+        assert not test_state.make_move('e8', 'd7')
         
     def test_capture_pinned_piece_next_to_king(self, tear_down):
         test_fen = 'rnbqkbnr/pp1Q2pp/2p5/4Pp2/8/8/PPP2PPP/RNB1KBNR b KQkq - 0 1'
@@ -152,6 +139,10 @@ class TestCheck:
         assert test_state.make_move('d7', 'e8')
         assert test_state.make_move('e6', 'e7')
         
+    def test_block_checking_queen(self, tear_down):
+        test_fen = 'rnbq1bnr/pppk2Qp/8/8/4Pp2/8/PPP3PP/RNB1KBNR b KQ - 0 1'
+        test_state = game_state.GameState(test_fen)
+        assert test_state.make_move('f8', 'e7')
         
     def test_cannot_castle(self, tear_down):
         NotImplemented

@@ -69,7 +69,6 @@ class Move:
                     # Check if checking piece can be captured
                     if checking_piece.index in possible_moves:
                         legal_moves.append(checking_piece.index)
-                        return legal_moves
                     # If checking piece is sliding piece, curent piece can block or capture
                     if isinstance(checking_piece, pieces.sliding_piece.SlidingPiece):
                         checking_line = checking_piece.indexes_in_between(checking_piece.checking_offset, king_index)
@@ -77,8 +76,8 @@ class Move:
                             if move in checking_line:
                                 legal_moves.append(move)
                         return legal_moves
-                    else:
-                        return [] 
+                    return legal_moves
+                    
                 
         # If not in check, king can move anywhere not attacked and pinned pieces must move within pin
         else:

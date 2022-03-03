@@ -69,9 +69,6 @@ class GameState:
     
     Methods
     -------
-    clone_game_state(self)
-        makes copy of GameState
-    
     move(self, start_index, end_index)
         makes a move
         
@@ -122,12 +119,12 @@ class GameState:
 
         if start_square.is_empty():
             print("ERROR No piece on index {}".format(start_index))
-            raise Error
+            return False
             
 
         if not move.Move.is_legal_move(self, start_index, end_index):
             print("ERROR Piece on index {} moving to index {} NOT LEGAL".format(start_index, end_index))
-            raise Error
+            return False
 
         # Check capture
         captured_piece = None
