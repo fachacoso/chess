@@ -161,6 +161,7 @@ class GameState:
             end_index,
             captured_piece,
             self.checking_pieces,
+            self.game_over,
             non_FEN_attributes
         )
         self.move_history.append(move_obj)
@@ -197,7 +198,7 @@ class GameState:
                 self.game_over = 'Stalemate'
             print('Game over! {}'.format(self.game_over))
         else:
-            self.game_over = ''
+            self.game_over = None
         
 
 

@@ -13,27 +13,40 @@ class PGN:
             #if king side castle
             return 'O-O-O'
         
-        # Notation of piece
+        # PIECE NOTATION
         notation = move_object.piece.notation
         if notation == 'P':
             notation = ''
             
-        # If piece was captured
+        # CAPTURE
         capture = ''
         if move_object.captured:
             if move_object.piece.notation == 'P':
                 capture = util.index_to_coordinate(move_object.start)[0]
             capture += 'x'
 
-        # Coordinate of where the piece ends
+        # END COORDINATE
         coordinate = util.index_to_coordinate(move_object.end)
         
-        # If in check
-        check = ''
-        if len(move_object.checking_pieces) > 0:
-            check = '+'
-            
-        return notation + capture + coordinate + check
+        
+        if not move_object.game_over:
+            # CHECK
+            check = ''
+            if len(move_object.checking_pieces) > 0:
+                check = '+'
+                
+            return notation + capture + coordinate + check
+        
+        # GAME OVER
+        else:
+            if move_object.game_over:
+                # CHECKMATE
+                if move_object.game_over == 'Checkmate':
+                    game_over = '#'
+                # STALEMATE
+                else:
+                    game_over = '$'
+            return notation + capture + coordinate + game_over
     
     @classmethod
     def load_moves_from_PGN(cls, game_state, PGN_string):

@@ -5,12 +5,13 @@ import pieces.sliding_piece
 
 # Class for a movement in a chess game
 class Move:
-    def __init__(self, piece, start_index, end_index, captured_piece, checking_pieces, non_FEN_attributes):
+    def __init__(self, piece, start_index, end_index, captured_piece, checking_pieces, game_over, non_FEN_attributes):
         self.piece              = piece
         self.start              = start_index
         self.end                = end_index
         self.captured           = captured_piece
         self.checking_pieces    = checking_pieces
+        self.game_over          = game_over
         self.PGN                = PGN_util.PGN.create_PGN_string(self)
         self.non_FEN_attributes = non_FEN_attributes
         print(self.__str__())
@@ -30,71 +31,62 @@ class Move:
         piece          = square.get_piece()
         possible_moves = Move.get_moves(game_state, square_index)
         
-        # If no possible moves, return empty list
+        # NO POSSIBLE MOVES - return empty list
         if len(possible_moves) == 0:
             return []
         
-        king_index = game_state.white_king_index if game_state.turn == 'w' else game_state.black_king_index
-        attacked_squares_list = Move.get_attacked_squares_list(game_state.attacked_squares)
-        defended_squares_list = game_state.defended_squares
-        
-        # King cannot capture defended squares
+        # IF KING
         if piece.notation == 'K':
-            attacked_squares_list.extend(game_state.defended_squares)
+            
+            # ILLEGAL KING MOVES - both attacked and defended squares
+            attacked_squares_list = Move.get_attacked_squares_list(game_state.attacked_squares)
+            defended_squares_list = game_state.defended_squares
+            illegal_king_moves    = attacked_squares_list + defended_squares_list
+                
+            for move in possible_moves:
+                if move not in illegal_king_moves:
+                    legal_moves.append(move)
+            return legal_moves
         
-        # If checked by two pieces, king must move
-        if len(game_state.checking_pieces) == 2:
-            if piece.notation == 'K':
-                for move in possible_moves:
-                    if move not in attacked_squares_list and move not in defended_squares_list:
-                        legal_moves.append(move)
-                return legal_moves
-            else:
+        # IF NOT KING
+        else:
+            # DOUBLE CHECK - no legal moves for non-king pieces
+            if len(game_state.checking_pieces) == 2:
                 return []
-            
-        # If checked by knight or pawn, must move or capture.  If checked by sliding, must move, capture, or block.
-        elif len(game_state.checking_pieces) == 1:
-            checking_piece = game_state.checking_pieces[0]
-            
-            if piece.notation == 'K':
-                for move in possible_moves:
-                    if move not in attacked_squares_list and move not in defended_squares_list:
-                        legal_moves.append(move)
-                return legal_moves
-            else:
-                # If piece is pinned, cannot move
+                
+            # SINGLE CHECK - capture or block checking piece
+            elif len(game_state.checking_pieces) == 1:
+                checking_piece = game_state.checking_pieces[0]
+                king_index = game_state.white_king_index if game_state.turn == 'w' else game_state.black_king_index
+                
+                # PINNED - cannot move
                 if piece in game_state.pinned:
                     return []
-                else:
-                    # Check if checking piece can be captured
-                    if checking_piece.index in possible_moves:
-                        legal_moves.append(checking_piece.index)
-                    # If checking piece is sliding piece, curent piece can block or capture
-                    if isinstance(checking_piece, pieces.sliding_piece.SlidingPiece):
-                        checking_line = checking_piece.indexes_in_between(checking_piece.checking_offset, king_index)
-                        for move in possible_moves:
-                            if move in checking_line:
-                                legal_moves.append(move)
-                        return legal_moves
-                    return legal_moves
-                    
                 
-        # If not in check, king can move anywhere not attacked and pinned pieces must move within pin
-        else:
-            if piece.notation == 'K':
-                for move in possible_moves:
-                    if move not in attacked_squares_list and move not in defended_squares_list:
-                        legal_moves.append(move)
+                # CAPTURE
+                if checking_piece.index in possible_moves:
+                    legal_moves.append(checking_piece.index)
+                    
+                # BLOCK - if checking piece is Rook, Bishop, or Queen
+                if isinstance(checking_piece, pieces.sliding_piece.SlidingPiece):
+                    checking_line = checking_piece.indexes_in_between(checking_piece.checking_offset, king_index)
+                    for move in possible_moves:
+                        if move in checking_line:
+                            legal_moves.append(move)
+                            
                 return legal_moves
+            
+            # NO CHECK
             else:
-                # If piece is pinned, can only move within pinned line
+                # PINNED - only move in pinned line
                 if piece.index in game_state.pinned:
                     for move in possible_moves:
                         if move in piece.pinned_line:
                             legal_moves.append(move)
                     return legal_moves
-                else:
-                    return possible_moves
+                
+                # NO RESTRICTION - return all possible moves
+                return possible_moves
     
     @classmethod
     def get_attacked_defended_pinned_check(cls, game_state):
