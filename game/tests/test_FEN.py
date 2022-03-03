@@ -7,7 +7,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 import game_state
-from testing_constants import *
+from tests.testing_constants import *
 
 class TestFEN:
     def test_game_state_returns_default_FEN(self):
@@ -20,7 +20,7 @@ class TestFEN:
             test_state = game_state.GameState(test_FEN)
             assert repr(test_state) == test_FEN
             
-    def test_game_state_board_is_same_object_as_fen_board(self):
+    def test_game_state_board_is_same_object_as_fen_board(self, tear_down):
         test_state = game_state.GameState()
         assert test_state.board == test_state.current_FEN.board
 

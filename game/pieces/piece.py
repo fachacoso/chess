@@ -146,6 +146,10 @@ class Piece(ABC):
             square_index += direction_offset
         return index_list
     
+    @classmethod
+    def reset_pieces(cls):
+        Piece.white_pieces = []
+        Piece.black_pieces = []
     
     """
     STRING REPRESENTATION

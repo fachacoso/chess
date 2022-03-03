@@ -1,6 +1,5 @@
 from msilib.schema import Error
 
-from numpy import RAISE
 import move
 import util.utils as util
 import util.FEN as FEN_util
@@ -22,34 +21,49 @@ class GameState:
     FEN Attributes
         board : list[Square()] (64)
             list of Square objects representing board
+            
         turn : str
             player to move ('w' or 'b')
+            
         castling : list[bool] (4)
             rights to castle
+            
         en_passant : int
             target index for en passant
+            
         halfmove_count : int
             count for halfmove
+            
         fullmove_count : int
             count for fullmove
+            
         turn_count : int
             count for each turn
+            
     current_FEN : FEN
         FEN object that represents current game state
+        
     FEN_history : FEN[]
         list of previous FEN's
+        
     move_history : list[Move()]
         list of previous moves
+        
     history_count : int
         index of current board viewed, used for viewing previous moves
+        
     attacked_squares : list[int]
         squares being attacked by opponent
+        
     defended_squares : list[int]
         squares containing enemy pieces current king cannot move to
+        
     checking_piece_list : list[Piece()] (2, 1, 0)
         pieces checking current player's king
+        
     legal_moves : dic{ key = piece_index : val = list[target_index]}
         dictionary  of all moves
+        
     game_over : str
         'Checkmate' / 'Stalemate' / 'Draw'
     

@@ -7,7 +7,7 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 import game_state
-from testing_constants import *
+from tests.testing_constants import *
 
 class TestCheckMate:
     def test_checkmate_displayed_in_move_object_PGN(self):

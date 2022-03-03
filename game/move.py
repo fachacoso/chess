@@ -135,13 +135,11 @@ class Move:
         legal_moves_dictionary = {}
         current_player_pieces = pieces.piece.Piece.white_pieces if game_state.turn == 'w' else pieces.piece.Piece.black_pieces
         #!  Iterate over specific playerss pieces
-        for square in game_state.board:
-            if not square.is_empty():
-                piece = square.get_piece()
-                if game_state.turn == piece.player:
-                    legal_moves = Move.get_legal_moves(game_state, piece.index)
-                    if len(legal_moves) > 0:
-                        legal_moves_dictionary[piece.index] = legal_moves
+        for piece in current_player_pieces:
+            if not piece.captured:
+                legal_moves = Move.get_legal_moves(game_state, piece.index)
+                if len(legal_moves) > 0:
+                    legal_moves_dictionary[piece.index] = legal_moves
         return legal_moves_dictionary
     
     @classmethod
