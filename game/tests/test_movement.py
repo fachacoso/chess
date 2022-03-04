@@ -11,23 +11,35 @@ from tests.testing_constants import *
 
 class TestPawnMovement:
     def test_pawn_forward(self, tear_down):
-        # Forward pawn movement
+        # ARRANGE
         test_state = game_state.GameState()
+        
+        # ACT
         test_state.make_move(11, 19)
+        
+        # ASSERT
         assert repr(test_state) == forward_pawn_FEN
         
     def test_pawn_capture(self, tear_down):
-        # Standard pawn capture
+        # ARRANGE
         test_state = game_state.GameState(pawn_capture_FEN_1)
+        
+        # ACT
         test_state.make_move('d5', 'c6')
+        
+        # ASSERT
         assert repr(test_state) == pawn_capture_FEN_2
 
 
 class TestMovementWithCoordinates:
     def test_pawn_forward(self, tear_down):
-        # Forward pawn movement
+        # ARRANGE
         test_state = game_state.GameState()
+        
+        # ACT
         test_state.make_move('d2', 'd3')
+        
+        # ASSERT
         assert repr(test_state) == forward_pawn_FEN
 
 
@@ -67,41 +79,61 @@ class TestAllMoves:
 
     
     def test_move_count_depth_1(self):
+        # ARRANGE
         test_state = game_state.GameState()
+        
+        # ACT
         possible_move_count = TestAllMoves.possible_board_states_count(test_state, 1)
             
+        # ASSERT
         expected = 20
         actual = possible_move_count
         assert expected == actual
         
     def test_move_count_depth_2(self):
+        # ARRANGE
         test_state = game_state.GameState()
+        
+        # ACT
         possible_move_count = TestAllMoves.possible_board_states_count(test_state, 2)
             
+        # ASSERT
         expected = 400
         actual = possible_move_count
         assert expected == actual
         
     def test_move_count_depth_3(self):
+        # ARRANGE
         test_state = game_state.GameState()
+        
+        # ACT
         possible_move_count = TestAllMoves.possible_board_states_count(test_state, 3)
             
+        # ASSERT
         expected = 8902
         actual = possible_move_count
         assert expected == actual
         
     def test_move_count_depth_4(self):
+        # ARRANGE
         test_state = game_state.GameState()
+        
+        # ACT
         possible_move_count = TestAllMoves.possible_board_states_count(test_state, 4)
             
+        # ASSERT
         expected = 197281
         actual = possible_move_count
         assert expected == actual
         
     def test_move_count_depth_5(self):
+        # ARRANGE
         test_state = game_state.GameState()
+        
+        # ACT
         possible_move_count = TestAllMoves.possible_board_states_count(test_state, 5)
             
+        # ASSERT
         expected = 4865609
         actual = possible_move_count
         assert expected == actual
