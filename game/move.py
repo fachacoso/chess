@@ -12,8 +12,8 @@ class Move:
         self.captured           = captured_piece
         self.checking_pieces    = checking_pieces
         self.game_over          = game_over
-        self.PGN                = PGN_util.PGN.create_PGN_string(self)
         self.non_FEN_attributes = non_FEN_attributes
+        self.PGN                = PGN_util.PGN.create_PGN_string(self)
         print(self.__str__())
     
     

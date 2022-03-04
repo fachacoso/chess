@@ -79,13 +79,6 @@ class TestSlidingPiecePinnedAttribute:
             
         
 class TestCheck:
-    def test_check_displayed_in_move_object_PGN(self, tear_down):
-        test_FEN = 'rnbqkbnr/ppp2ppp/3Pp3/8/8/8/PPP1PPPP/RNBQKBNR w KQkq - 0 1'
-        test_state = game_state.GameState(test_FEN)
-        test_state.make_move(43, 51)
-        assert len(test_state.checking_pieces) > 0
-        assert str(test_state.move_history[-1]) == 'd7+'
-    
     def test_cant_move_defended(self, tear_down):
         test_fen = '8/k7/1Q6/2K5/8/8/8/8 b - - 0 1'
         test_state = game_state.GameState(test_fen)

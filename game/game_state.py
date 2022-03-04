@@ -236,12 +236,12 @@ class GameState:
     Used for updating GameState after move
     """
     def update_game_state(self, piece, start_index, end_index, captured_piece):
-        self.update_en_passant(piece, start_index, end_index)
         self.update_castling(piece)
         self.update_halfmove(piece, captured_piece)
         self.update_FEN()
         self.update_king_index(start_index, end_index)
         self.update_movement()
+        self.update_en_passant(piece, start_index, end_index)
         self.update_legal_moves()
     
     def next_turn(self):
@@ -250,15 +250,20 @@ class GameState:
         self.fullmove_count == (self.turn_count // 2) + 1
             
 
-    def update_en_passant(self, piece, start_index, end_index):
-        if piece.notation == "P":
-            # Adds en passant when pawn moves forward twice
+    def update_en_passant(self, piece_moved, start_index, end_index):
+        if piece_moved.notation == "P":
+            # Possible en passant if double forward
             if abs(start_index - end_index) == 16:
-                self.en_passant = (start_index + end_index) // 2
-            else:
-                self.en_passant = None
-        else:
-            self.en_passant = None
+                possible_en_passant = (start_index + end_index) // 2
+                
+                pieces = piece_moved.white_pieces if self.turn == 'w' else piece_moved.black_pieces
+                for piece in pieces:
+                    if piece.notation == 'P':
+                        # If player pawn can capture en passant square, record square
+                        if possible_en_passant in piece.attacked_squares:
+                            self.en_passant = end_index
+                            return
+        self.en_passant = None
 
     def update_castling(self, piece):
 
