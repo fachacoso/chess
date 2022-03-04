@@ -121,3 +121,14 @@ class TestParseMoveFromPGN:
         expected = 'xxx'
         actual   = repr(test_state)
         assert expected == actual
+        
+class TestParseGameInPGN:
+    def test_game_1(self, tear_down):
+        pgn_string = '1. e4 e5 2. Nf3 Nc6 3. Bc4  Nb4 4. Nxe5 Qg5 5. Nxf7 Qf6 6. Nxh8 d6 7. Bf7+ Ke7 8. Bxg8 g6 9. Nxg6+ Qxg6 10. Bb3 Qxg2 11. Rf1 Bg4 12. f3 Bxf3 13. Qxf3 Nxc2+'
+        
+        test_state = game_state.GameState()
+        PGN_util.PGN.load_moves_from_PGN(test_state, pgn_string)
+        
+        expected = 'r4b2/ppp1k2p/3p4/8/4P3/1B3Q2/PPnP2qP/RNB1KR2 w Q - 0 14'
+        actual   = repr(test_state)
+        assert expected == actual

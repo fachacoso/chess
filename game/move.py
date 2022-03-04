@@ -105,15 +105,16 @@ class Move:
             opponent_pieces = pieces.piece.Piece.white_pieces
             king_index      = game_state.black_king_index
         for piece in opponent_pieces:
-            attacked_squares_list = piece.attacked_squares
-            if len(attacked_squares_list) != 0:
-                attacked_squares_dictionary[piece.index] = attacked_squares_list
-                
-            possible_moves_list = piece.possible_moves
-            if king_index in possible_moves_list:
-                checking_pieces.append(piece)
+            if not piece.captured:
+                attacked_squares_list = piece.attacked_squares
+                if len(attacked_squares_list) != 0:
+                    attacked_squares_dictionary[piece.index] = attacked_squares_list
+                    
+                possible_moves_list = piece.possible_moves
+                if king_index in possible_moves_list:
+                    checking_pieces.append(piece)
             
-            defended_squares.extend(piece.defended_squares)
+                defended_squares.extend(piece.defended_squares)
             
         king_square = game_state.get_square(king_index)
         king = king_square.get_piece()

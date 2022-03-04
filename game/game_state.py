@@ -238,16 +238,16 @@ class GameState:
     def update_game_state(self, piece, start_index, end_index, captured_piece):
         self.update_castling(piece)
         self.update_halfmove(piece, captured_piece)
-        self.update_FEN()
         self.update_king_index(start_index, end_index)
         self.update_movement()
         self.update_en_passant(piece, start_index, end_index)
+        self.update_FEN()
         self.update_legal_moves()
     
     def next_turn(self):
         self.turn_count += 1
         self.turn = 'w' if self.turn == 'b' else 'b'
-        self.fullmove_count == (self.turn_count // 2) + 1
+        self.fullmove_count = (self.turn_count // 2) + 1
             
 
     def update_en_passant(self, piece_moved, start_index, end_index):

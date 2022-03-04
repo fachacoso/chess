@@ -19,7 +19,7 @@ class TestPawnMovement:
     def test_pawn_capture(self, tear_down):
         # Standard pawn capture
         test_state = game_state.GameState(pawn_capture_FEN_1)
-        test_state.make_move(35, 42)
+        test_state.make_move('d5', 'c6')
         assert repr(test_state) == pawn_capture_FEN_2
 
 

@@ -74,35 +74,19 @@ class PGN:
             game_state (GameState()): current game state
             PGN_string (string): PGN notation of all moves
         """        
-        PGN_moves = []
-        
-        pgn_list = PGN_string.split()
+        PGN_list = PGN_string.split()
         parse_counter = 0
-        for i in len(pgn_list):
-            if parse_counter % 3 == 0:
-                continue
-            
-        return PGN_moves
-    
-    @classmethod
-    def parse_PGN(cls, game_state, string):
-        """
-
-        Args:
-            game_state (GameState()): current game state
-            PGN_string (str): PGN notation of all moves
-        """    
-        
+        for PGN_move_string in PGN_list:
+            if parse_counter % 3 != 0:
+                PGN.move_from_PGN(game_state, PGN_move_string)
+            parse_counter += 1
                 
     @classmethod    
-    def move_from_PGN(cls, game_state, PGN_string):
+    def move_from_PGN(cls, game_state, PGN_move_string):
         """Find start and end index for move in PGN_string
 
         Args:
-            PGN_string (str): PGN representation of move
-
-        Returns:
-            list[int] (2): List containing start and end index of move
+            PGN_move_string (str): PGN representation of move
         """
         piece_notations = ['K', 'Q', 'B', 'N', 'R', 'P']
         columns         = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
@@ -113,7 +97,7 @@ class PGN:
         #pawn promotion
         
         # FIND PIECE TYPE
-        possible_piece_notation = PGN_string[0]
+        possible_piece_notation = PGN_move_string[0]
         if possible_piece_notation in piece_notations:
             possible_pieces = [piece for piece in current_player_pieces if piece.notation == possible_piece_notation]
         else:
@@ -121,7 +105,7 @@ class PGN:
         
         # FIND ENDING SQUARE INDEX
         column = ''
-        for char in PGN_string:
+        for char in PGN_move_string:
             if char in columns:
                 
                 # If nothing in column
@@ -138,21 +122,13 @@ class PGN:
                 # FIND PIECE IN POSSIBLE PIECES THAT CAN MOVE TO END_COORDINATE
                 legal_moves = game_state.legal_moves
                 for possible_piece in possible_pieces:
-                    if end_index in legal_moves[possible_piece.index]:
-                        start_index = possible_piece.index
-                        break
+                    if possible_piece.index in legal_moves:
+                        if end_index in legal_moves[possible_piece.index]:
+                            start_index = possible_piece.index
+                            break
                 break
         game_state.make_move(start_index, end_index)
-                
-                
-            
         
-        
-        
-        # return start_index, end_index
-        
-    def index_from_PGN():
-        NotImplemented
         
     @classmethod    
     def PGN_string_of_game(cls, game_state):
