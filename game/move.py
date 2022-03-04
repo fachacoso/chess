@@ -36,9 +36,8 @@ class Move:
             return []
         
         # IF KING
-        if piece.notation == 'K':
-            
-            # ILLEGAL KING MOVES - both attacked and defended squares
+        if piece.notation == 'K':            
+            # FILTER ILLEGAL KING MOVES - both attacked and defended squares
             attacked_squares_list = Move.get_attacked_squares_list(game_state.attacked_squares)
             defended_squares_list = game_state.defended_squares
             illegal_king_moves    = attacked_squares_list + defended_squares_list
@@ -46,6 +45,16 @@ class Move:
             for move in possible_moves:
                 if move not in illegal_king_moves:
                     legal_moves.append(move)
+                
+            # CASTLE MOVES
+            if len(game_state.checking_pieces) == 0:
+                possible_castle_moves = []
+                possible_castle_moves.extend(piece.possible_castle_moves)
+                for castle_move in possible_castle_moves:
+                    index_in_between = (piece.index + castle_move) // 2
+                    if castle_move not in illegal_king_moves and index_in_between not in illegal_king_moves:
+                        legal_moves.append(castle_move)
+    
             return legal_moves
         
         # IF NOT KING

@@ -25,20 +25,24 @@ class King(piece.Piece):
     notation = "K"
     def __init__(self, index, player, move_count=0):
         super().__init__(index, player, move_count)
+        self.possible_castle_moves = []
         self.checked_line = []
+        
         
 
     def update_movement_attributes(self, game_state):
         """Returns list of moves for King"""
-        moves = []
+        moves        = []
+        castle_moves = []
 
-        # Standard moves
+        # STANDARD MOVES
         moves.extend(self.standard_moves(game_state))
 
-        # Castling
-        moves.extend(self.castle_moves(game_state))
+        # CASTLE MOVES
+        castle_moves.extend(self.castle_moves(game_state))
         
-        self.possible_moves = moves
+        self.possible_moves        = moves
+        self.possible_castle_moves = castle_moves
 
     def standard_moves(self, game_state):
         """Returns list of possible moves and update attacked and defended squares"""

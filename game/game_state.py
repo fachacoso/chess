@@ -126,35 +126,34 @@ class GameState:
             print("ERROR Piece on index {} moving to index {} NOT LEGAL".format(start_index, end_index))
             return False
 
-        # Check capture
+        # CAPTURE
         captured_piece = None
         if end_square.is_empty():
-            # If en passant capture
+            # EN PASSANT
             if piece.notation == "P" and end_index == self.en_passant:
                 if piece.player == "W":
                     captured_index = end_index + 8
                 else:
                     captured_index = end_index - 8
                 captured_piece = self.capture_piece(captured_index)
-        # Stores captured piece
         else:
             captured_piece = self.capture_piece(end_index)
             
-        # Move
+        # MOVE
         start_square.move_piece(end_square)
         
-        # Castle move check
+        # CASTLE MOVE CHECK
         if piece.notation == "K" and abs(start_index - end_index) == 2:
             castle_index = (start_index + end_index) // 2
             self.castle_move(castle_index)
 
-        # Update GameState
+        # UPDATE GAMESTATE
         self.next_turn()
         self.update_game_state(piece, start_index, end_index, captured_piece)
         self.check_game_over()
 
 
-        # Create Move Instance
+        # MOVE OBJECT
         move_obj = move.Move(
             piece,
             start_index,
@@ -170,27 +169,31 @@ class GameState:
 
     def undo_move(self):
         if len(self.move_history) > 0:
+            # GET LAST MOVE
             last_move     = self.move_history.pop()
             current_index = last_move.end
             prev_index    = last_move.start
-            
             current_square = self.get_square(current_index)
             prev_square    = self.get_square(prev_index)
+            
+            # UNDO CASTLE MOVE - if last move was castle
+            if current_square.get_piece().notation == "K" and abs(current_index - prev_index) == 2:
+                castle_index = (current_index + prev_index) // 2
+                self.undo_castle_move(castle_index)
+                
+            # MOVE PIECE BACK
             current_square.undo_move_piece(prev_square)
             
-        if piece.notation == "K" and abs(current_index - prev_index) == 2:
-            castle_index = (current_index + end_index) // 2
-            self.castle_move(castle_index)
-            
+            # PLACE CAPTURE PIECE - if last move captured
             captured_piece = last_move.captured
             if captured_piece:
                 captured_square = self.get_square(captured_piece.index)
                 captured_square.set_piece(captured_piece)
                 captured_piece.captured = False
             
+            # UPDATE FEN
             last_FEN = self.FEN_history.pop()
             last_FEN.load_FEN_string(self)
-            
             self.__dict__.update(last_move.non_FEN_attributes)
             
             
@@ -238,10 +241,10 @@ class GameState:
         
     def undo_castle_move(self, prev_end_index):
         castle_dic   = {3: 0, 5: 7, 61: 63, 59: 56}
-        start_index  = castle_dic[end_index]
-        start_square = self.get_square(start_index)
-        end_square   = self.get_square(end_index)
-        start_square.move_piece(end_square)
+        prev_start_index  = castle_dic[prev_end_index]
+        prev_start_square = self.get_square(prev_start_index)
+        prev_end_square   = self.get_square(prev_end_index)
+        prev_end_square.undo_move_piece(prev_start_square)
 
 
     """
