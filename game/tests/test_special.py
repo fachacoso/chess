@@ -12,45 +12,106 @@ from tests.testing_constants import *
 
 class TestPawnSpecial:
         
-    def test_pawn_en_passant(self):
+    def test_pawn_en_passant(self, tear_down):
         test_state = game_state.GameState()
         test_state.make_move(43, 50)
         assert repr(test_state) == pawn_en_passant_FEN
         
-    def test_pawn_promotion(self):
+    def test_pawn_promotion(self, tear_down):
         NotImplemented
         
         
-class TestCastleSpecial:
-    def test_castle_wK(self):
-        NotImplemented
+class TestCastle:
+    def test_castle_wQ(self, tear_down):
+        test_FEN   = 'r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQkq - 0 1'
+        test_state = game_state.GameState(test_FEN)
+        
+        test_state.make_move('e1', 'c1')
+        
+        actual   = repr(test_state)
+        expected = 'r3k2r/pppppppp/8/8/8/8/PPPPPPPP/2KR3R b kq - 1 1'
+        assert expected == actual
     
-    def test_castle_wQ(self):
-        NotImplemented
+    def test_castle_wK(self, tear_down):
+        test_FEN   = 'r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQkq - 0 1'
+        test_state = game_state.GameState(test_FEN)
+        
+        test_state.make_move('e1', 'g1')
+        
+        actual   = repr(test_state)
+        expected = 'r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R4RK1 b kq - 1 1'
+        assert expected == actual
     
-    def test_castle_bK(self):
-        NotImplemented
+    def test_castle_bK(self, tear_down):
+        test_FEN   = 'r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R b KQkq - 0 1'
+        test_state = game_state.GameState(test_FEN)
+        
+        test_state.make_move('e8', 'g8')
+        
+        actual   = repr(test_state)
+        expected = 'r4rk1/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQ - 1 2'
+        assert expected == actual
     
-    def test_castle_bQ(self):
-        NotImplemented
+    def test_castle_bQ(self, tear_down):
+        # Arrange
+        test_FEN   = 'r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R b KQkq - 0 1'
+        test_state = game_state.GameState(test_FEN)
+        
+        # Act
+        test_state.make_move('e8', 'c8')
+        
+        # Assert
+        actual   = repr(test_state)
+        expected = '2kr3r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQ - 1 2'
+        assert expected == actual
     
-    def test_castle_blocked_by_check(self):
-        NotImplemented
+    def test_castle_blocked_by_check(self, tear_down):
+        # Arrange
+        test_FEN   = 'r3k2r/p3q2p/8/8/8/8/P6P/R3K2R w KQkq - 0 1'
+        test_state = game_state.GameState(test_FEN)
+        
+        # Act
+        test_state.make_move('e1', 'c1')
+        
+        # Assert
+        actual   = repr(test_state)
+        expected = test_FEN
+        assert expected == actual
     
-    def test_castle_blocked_by_piece_in_between(self):
-        NotImplemented
+    def test_castle_blocked_by_piece_in_between(self, tear_down):
+        # Arrange
+        test_FEN   = 'r3k2r/p3q2p/8/8/8/8/P6P/R2PK2R w KQkq - 0 1'
+        test_state = game_state.GameState(test_FEN)
+        
+        # Act
+        test_state.make_move('e1', 'c1')
+        
+        # Assert
+        actual   = repr(test_state)
+        expected = test_FEN
+        assert expected == actual
     
-    def test_castle_blocked_by_sliding_piece_attacking_piece_in_between(self):
-        NotImplemented
+    def test_castle_blocked_by_sliding_piece_attacking_piece_in_between(self, tear_down):
+        # Arrange
+        test_FEN   = 'r3k2r/p2q3p/8/8/8/8/P6P/R3K2R w KQkq - 0 1'
+        test_state = game_state.GameState(test_FEN)
+        
+        # Act
+        test_state.make_move('e1', 'c1')
+        
+        # Assert
+        actual   = repr(test_state)
+        expected = test_FEN
+        assert expected == actual
     
     
 class TestUndoSpecial:
-    def test_undo_en_passant(self):
+    def test_undo_en_passant(self, tear_down):
         NotImplemented
         
-    def test_undo_promotion(self):
+    def test_undo_promotion(self, tear_down):
         NotImplemented
 
         
-    def test_undo_castle(self):
+    def test_undo_castle(self, tear_down):
         NotImplemented

@@ -178,6 +178,10 @@ class GameState:
             prev_square    = self.get_square(prev_index)
             current_square.undo_move_piece(prev_square)
             
+        if piece.notation == "K" and abs(current_index - prev_index) == 2:
+            castle_index = (current_index + end_index) // 2
+            self.castle_move(castle_index)
+            
             captured_piece = last_move.captured
             if captured_piece:
                 captured_square = self.get_square(captured_piece.index)
@@ -226,9 +230,18 @@ class GameState:
         Args:
             end_index (int): target index of rook
         """
-        castle_dic = {3: 0, 5: 7, 61: 63, 59: 56}
-        start_index = castle_dic[end_index]
-        self.move_piece(start_index, end_index)
+        castle_dic   = {3: 0, 5: 7, 61: 63, 59: 56}
+        start_index  = castle_dic[end_index]
+        start_square = self.get_square(start_index)
+        end_square   = self.get_square(end_index)
+        start_square.move_piece(end_square)
+        
+    def undo_castle_move(self, prev_end_index):
+        castle_dic   = {3: 0, 5: 7, 61: 63, 59: 56}
+        start_index  = castle_dic[end_index]
+        start_square = self.get_square(start_index)
+        end_square   = self.get_square(end_index)
+        start_square.move_piece(end_square)
 
 
     """

@@ -8,6 +8,10 @@ SQUARE_SIZE = BOARD_SIZE // 8
 WINDOW = pygame.display.set_mode((BOARD_SIZE, BOARD_SIZE))
 pygame.display.set_caption("Chess")
 
+
+def test_main():
+    main()
+
 # Colors
 LIGHT = (145, 130, 109)
 DARK = (108, 82, 59)
@@ -16,12 +20,16 @@ DARK = (108, 82, 59)
 def main():
     pygame.init()
     load_pieces()
-    game = game_state.GameState('rnbqkbnr/pp1Q2pp/2p5/4Pp2/8/8/PPP2PPP/RNB1KBNR b KQkq - 0 1')
+    game = game_state.GameState('r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQkq - 0 1')
+    old = repr(game)
 
     # Game loop
     selected_index = None
     run = True
     while run:
+        if old != repr(game):
+            old = repr(game)
+        
         for e in pygame.event.get():
             # Quits game
             if e.type == pygame.QUIT:
@@ -75,7 +83,7 @@ IMAGES = {}
 def load_pieces():
     pieces = ['bP', 'bR', 'bN', 'bK', 'bB', 'bQ', 'bK', 'wP', 'wR', 'wN', 'wK', 'wB', 'wQ', 'wK']
     for piece in pieces:
-        IMAGES[piece] = pygame.transform.scale(pygame.image.load('../images/' + piece + ".png").convert_alpha(), (SQUARE_SIZE, SQUARE_SIZE))
+        IMAGES[piece] = pygame.transform.scale(pygame.image.load('images/' + piece + ".png").convert_alpha(), (SQUARE_SIZE, SQUARE_SIZE))
 
 def update_view(game_state, selected_index, mouse_pos):
     draw_board()
@@ -131,6 +139,3 @@ def get_index(coordinate):
 
 def update_highlight():
     NotImplemented
-
-
-main()

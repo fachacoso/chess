@@ -131,7 +131,7 @@ class Piece(ABC):
     def piece_in_between(self, game_state, direction_offset, start_index, end_index):
         """Return True if there are any pieces between start_index and end_index"""
         square_index = start_index + direction_offset
-        while square_index <= end_index:
+        while square_index < end_index:
             between_square = game_state.get_square(square_index)
             if not between_square.is_empty():
                 return False
