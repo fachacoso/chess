@@ -13,8 +13,13 @@ from tests.testing_constants import *
 class TestPawnSpecial:
         
     def test_pawn_en_passant(self, tear_down):
+        # ARRANGE
         test_state = game_state.GameState()
+        
+        # ACT
         test_state.make_move('d2', 'd4')
+        
+        # ASSERT
         assert repr(test_state) == 'rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1'
         
     def test_pawn_promotion(self, tear_down):

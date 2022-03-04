@@ -1,5 +1,7 @@
 import util.utils as util
 import pieces.piece as piece
+import pieces.piece_constants as piece_constants
+import regex as re
 
 
 class PGN:
@@ -73,13 +75,13 @@ class PGN:
         Args:
             game_state (GameState()): current game state
             PGN_string (string): PGN notation of all moves
-        """        
+        """
+        PGN_string = re.sub(r"{(.*?)}", "", PGN_string) # Remove annotations
+        PGN_string = re.sub(r"\(.*?\)", "", PGN_string) # Remove branching moves
+        PGN_string = re.sub(r"[0-9]+\.+", "", PGN_string) # Remove number
         PGN_list = PGN_string.split()
-        parse_counter = 0
         for PGN_move_string in PGN_list:
-            if parse_counter % 3 != 0:
-                PGN.move_from_PGN(game_state, PGN_move_string)
-            parse_counter += 1
+            PGN.move_from_PGN(game_state, PGN_move_string)
                 
     @classmethod    
     def move_from_PGN(cls, game_state, PGN_move_string):
@@ -93,8 +95,25 @@ class PGN:
         ranks           = ['1', '2', '3', '4', '5', '6', '7', '8']
         current_player_pieces   = piece.Piece.white_pieces if game_state.turn == 'w' else piece.Piece.black_pieces
         
-        #castle
-        #pawn promotion
+        # CASTLE
+        if PGN_move_string == 'O-O':
+            if game_state.turn == 'w':
+                start_index = piece_constants.WHITE_KING_INDEX
+                end_index = start_index + 2
+            else:
+                start_index = piece_constants.BLACK_KING_INDEX
+                end_index = start_index + 2
+            game_state.make_move(start_index, end_index)
+        elif PGN_move_string == 'O-O-O':
+            if game_state.turn == 'w':
+                start_index = piece_constants.WHITE_KING_INDEX
+                end_index = start_index - 2
+            else:
+                start_index = piece_constants.BLACK_KING_INDEX
+                end_index = start_index - 2
+            game_state.make_move(start_index, end_index)
+            
+    
         
         # FIND PIECE TYPE
         possible_piece_notation = PGN_move_string[0]
@@ -128,6 +147,7 @@ class PGN:
                             break
                 break
         game_state.make_move(start_index, end_index)
+        #pawn promotion
         
         
     @classmethod    

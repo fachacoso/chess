@@ -78,7 +78,7 @@ class TestAllMoves:
         return possible_move_count
 
     
-    def test_move_count_depth_1(self):
+    def test_move_count_depth_1(self, tear_down):
         # ARRANGE
         test_state = game_state.GameState()
         
@@ -90,7 +90,7 @@ class TestAllMoves:
         actual = possible_move_count
         assert expected == actual
         
-    def test_move_count_depth_2(self):
+    def test_move_count_depth_2(self, tear_down):
         # ARRANGE
         test_state = game_state.GameState()
         
@@ -102,7 +102,7 @@ class TestAllMoves:
         actual = possible_move_count
         assert expected == actual
         
-    def test_move_count_depth_3(self):
+    def test_move_count_depth_3(self, tear_down):
         # ARRANGE
         test_state = game_state.GameState()
         
@@ -114,7 +114,7 @@ class TestAllMoves:
         actual = possible_move_count
         assert expected == actual
         
-    def test_move_count_depth_4(self):
+    def test_move_count_depth_4(self, tear_down):
         # ARRANGE
         test_state = game_state.GameState()
         
@@ -126,7 +126,7 @@ class TestAllMoves:
         actual = possible_move_count
         assert expected == actual
         
-    def test_move_count_depth_5(self):
+    def test_move_count_depth_5(self, tear_down):
         # ARRANGE
         test_state = game_state.GameState()
         
