@@ -162,8 +162,8 @@ class PGN:
         piece_coordinate_string = re.match(r'^[a-h]?[1-8]?', no_piece_string)
         if piece_coordinate_string.group() != '':
             # FILTER COLUMN AND RANK
-            possible_column = re.match(r'[a-h]', no_piece_string[1:])
-            possible_rank   = re.match(r'[1-8]', no_piece_string[1:])
+            possible_column = re.match(r'[a-h]', no_piece_string[:])
+            possible_rank   = re.match(r'[1-8]', no_piece_string[:])
             if possible_column:
                 possible_column = possible_column.group()
                 possible_pieces = [piece for piece in possible_pieces if util.index_to_coordinate(piece.index)[0] == possible_column]

@@ -84,7 +84,9 @@ class Piece(ABC):
         self.possible_moves   = []
         self.attacked_squares = []
         self.defended_squares = []
-        self.pinned_line      = []
+        
+        self.pinning_piece = []
+        self.pinned_line   = []
         
         # List of all pieces
         if player == 'w':

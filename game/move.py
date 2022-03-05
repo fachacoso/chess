@@ -90,7 +90,7 @@ class Move:
                 # PINNED - only move in pinned line
                 if piece.index in game_state.pinned:
                     for move in possible_moves:
-                        if move in piece.pinned_line:
+                        if move in piece.pinned_line or move == piece.pinning_piece.index:
                             legal_moves.append(move)
                     return legal_moves
                 

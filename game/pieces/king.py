@@ -12,10 +12,6 @@ class King(piece.Piece):
     cls.notation : str
         algebraic notation of King - K
     
-    checked_line : lint[int]
-        List of indexes in between king and sliding enemy piece
-
-
     Methods
     -------
     get_moves(self, game_state)
@@ -26,9 +22,6 @@ class King(piece.Piece):
     def __init__(self, index, player, move_count=0):
         super().__init__(index, player, move_count)
         self.possible_castle_moves = []
-        self.checked_line = []
-        
-        
 
     def update_movement_attributes(self, game_state):
         """Returns list of moves for King"""
@@ -131,7 +124,8 @@ class King(piece.Piece):
         return False
     
     def get_pinned_pieces(self, game_state):
-        """Returns list of pinned pieces and adds pinned_direction to pinned piece"""
+        """Returns list of pinned pieces and adds pinned_line to pinned piece"""
+        pinning_piece = None
         pinned_pieces = []
         opp = 'w' if game_state.turn == 'b' else 'b'
         # Iterate over all directions
@@ -170,11 +164,13 @@ class King(piece.Piece):
                             
                     # If there IS a possible pin candidate already
                     else:
+                        possible_pinned_piece = game_state.get_square(possible_pin).get_piece()
                         # If opponent piece
                         if piece.player == opp:
                             # If elligible sliding piece type, add to pinned
                             if piece.notation in pinning_pieces:
-                                piece.pinned_line = possible_pin_line
+                                possible_pinned_piece.pinning_piece = piece
+                                possible_pinned_piece.pinned_line = possible_pin_line
                                 pinned_pieces.append(possible_pin)     
                         # If current player piece, stop checking
                         else:
