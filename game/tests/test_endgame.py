@@ -9,7 +9,7 @@ sys.path.append(parent)
 import game_state
 from tests.testing_constants import *
 
-class TestEndgame:
+class TestCheckmate:
     def test_checkmate(self, tear_down):
         # ARRANGE
         test_fen = '1k6/8/8/8/8/r7/1q6/4K3 b - - 0 1'

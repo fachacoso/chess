@@ -80,12 +80,18 @@ class PGN:
             # CHECKMATE
             if move_object.game_over == 'Checkmate':
                 game_over = '#'
-            # STALEMATE
-            elif move_object.game_over == 'Stalemate':
-                game_over = '$'
+                if moving_piece.player == 'w':
+                    game_over += ' 1-0'
+                else:
+                    game_over += ' 0-1'
             # DRAW
-            elif  move_object.game_over == 'some other draw':
-                NotImplemented
+            else:
+                # STALEMATE
+                if move_object.game_over == 'Stalemate':
+                    game_over = '$'
+                elif  move_object.game_over == 'some other draw':
+                    NotImplemented
+                game_over += '1/2-1/2'
                 
             # ! implemenet 1-0 for white wins, 0-1 for black, and 1/2-1/2 for a draw.
                 
@@ -103,6 +109,8 @@ class PGN:
         PGN_string = re.sub(r"{(.*?)}", "", PGN_string) # Remove annotations
         PGN_string = re.sub(r"\(.*?\)", "", PGN_string) # Remove branching moves
         PGN_string = re.sub(r"[0-9]+\.+", "", PGN_string) # Remove number
+        PGN_string = re.sub(r'(1\/2-1\/2)?', "", PGN_string) # Remove draw notation
+        PGN_string = re.sub(r'[0-1]-[0-1]?', "", PGN_string) # Remove win notation
         PGN_list = PGN_string.split()
         for PGN_move_string in PGN_list:
             PGN.move_from_PGN(game_state, PGN_move_string)
@@ -114,9 +122,6 @@ class PGN:
         Args:
             PGN_move_string (str): PGN representation of move
         """
-        piece_notations = ['K', 'Q', 'B', 'N', 'R', 'P']
-        columns         = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
-        ranks           = ['1', '2', '3', '4', '5', '6', '7', '8']
         current_player_pieces   = piece.Piece.white_pieces if game_state.turn == 'w' else piece.Piece.black_pieces
         
         # CASTLE
@@ -128,6 +133,7 @@ class PGN:
                 start_index = piece_constants.BLACK_KING_INDEX
                 end_index = start_index + 2
             game_state.make_move(start_index, end_index)
+            return
         elif PGN_move_string == 'O-O-O':
             if game_state.turn == 'w':
                 start_index = piece_constants.WHITE_KING_INDEX
@@ -136,42 +142,43 @@ class PGN:
                 start_index = piece_constants.BLACK_KING_INDEX
                 end_index = start_index - 2
             game_state.make_move(start_index, end_index)
-            
-    
-        
-        # FIND PIECE TYPE
-        possible_piece_notation = PGN_move_string[0]
-        if possible_piece_notation in piece_notations:
-            possible_pieces = [piece for piece in current_player_pieces if piece.notation == possible_piece_notation]
-        else:
-            possible_pieces = [piece for piece in current_player_pieces if piece.notation == 'P']
+            return
         
         # FIND ENDING SQUARE INDEX
-        column = ''
-        for char in PGN_move_string:
-            if char in columns:
-                
-                # If nothing in column
-                if not column:
-                    column = char
-                # If second column, first column specifies piece location
-                else:
-                    possible_pieces = [piece for piece in possible_pieces if util.index_to_coordinate(piece.index)[0] == column]
-                    column = char
-            elif char in ranks:
-                end_coordinate = column + char
-                end_index = util.coordinate_to_index(end_coordinate)
-                
-                # FIND PIECE IN POSSIBLE PIECES THAT CAN MOVE TO END_COORDINATE
-                legal_moves = game_state.legal_moves
-                for possible_piece in possible_pieces:
-                    if possible_piece.index in legal_moves:
-                        if end_index in legal_moves[possible_piece.index]:
-                            start_index = possible_piece.index
-                            break
-                break
+        end_coordinate = re.findall(r'[a-h][1-8]', PGN_move_string)[-1]
+        no_end_coordinate_string = re.sub(r'[a-h][1-8]', '', PGN_move_string)
+        end_index = util.coordinate_to_index(end_coordinate)
+        
+        # FIND PIECE TYPE
+        piece_string = re.match(r'^[KRNBQ]{1}', no_end_coordinate_string)
+        if not piece_string:
+            possible_pieces = [piece for piece in current_player_pieces if piece.notation == 'P']
+        else:
+            piece_string = piece_string.group()
+            piece_notation = piece_string
+            possible_pieces = [piece for piece in current_player_pieces if piece.notation == piece_notation]
+        
+        no_piece_string         = re.sub(r'^[RNBQ]', '', no_end_coordinate_string)
+        piece_coordinate_string = re.match(r'^[a-h]?[1-8]?', no_piece_string)
+        if piece_coordinate_string.group() != '':
+            # FILTER COLUMN AND RANK
+            possible_column = re.match(r'[a-h]', no_piece_string[1:])
+            possible_rank   = re.match(r'[1-8]', no_piece_string[1:])
+            if possible_column:
+                possible_column = possible_column.group()
+                possible_pieces = [piece for piece in possible_pieces if util.index_to_coordinate(piece.index)[0] == possible_column]
+            if possible_rank:
+                possible_rank   = possible_rank.group()
+                possible_pieces = [piece for piece in possible_pieces if util.index_to_coordinate(piece.index)[1] == possible_rank]
+        
+        # FILTER LEGAL MOVES
+        legal_moves = game_state.legal_moves
+        for possible_piece in possible_pieces:
+            if possible_piece.index in legal_moves:
+                if end_index in legal_moves[possible_piece.index]:
+                    start_index = possible_piece.index
+                    break
         game_state.make_move(start_index, end_index)
-        #pawn promotion
         
         
     @classmethod    
