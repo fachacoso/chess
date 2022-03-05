@@ -25,7 +25,7 @@ class SlidingPiece(piece.Piece):
     notation          = None
     
     def __init__(self, index, player, move_count = 0):
-        Piece.__init__(self, index, player, move_count)
+        super().__init__(index, player, move_count)
         self.checking_offset = 0
         
 

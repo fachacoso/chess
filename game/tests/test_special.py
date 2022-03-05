@@ -23,7 +23,17 @@ class TestPawnSpecial:
         assert repr(test_state) == 'rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1'
         
     def test_pawn_promotion(self, tear_down):
-        NotImplemented
+        # ARRANGE
+        test_fen   = '4k3/P7/8/8/8/8/8/4K3 w - - 0 1'
+        test_state = game_state.GameState(test_fen)
+        
+        # ACT
+        test_state.make_move('a7', 'a8')
+        
+        # ASSERT
+        actual   = repr(test_state)
+        expected = 'Q3k3/8/8/8/8/8/8/4K3 b - - 0 1'
+        assert actual == expected
         
         
 class TestCastle:

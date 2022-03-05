@@ -1,5 +1,10 @@
 import pieces.piece as piece
 import pieces.piece_constants as piece_constants
+import pieces.knight as knight
+import pieces.bishop as bishop
+import pieces.rook as rook
+import pieces.queen as queen
+import constants
 
 class Pawn(piece.Piece):
     """
@@ -18,22 +23,72 @@ class Pawn(piece.Piece):
     """
 
     notation = "P"
+    
+    def __init__(self, index, player, move_count=0):
+        super().__init__(index, player, move_count)
+        self.promotion_choice    = None
+        self.promoted_move_count = 0
 
     def update_movement_attributes(self, game_state):
         """Returns list of moves for pawn"""
         moves  = []
 
-        # Returns possible moves
-        forward_square_list, capture_square_list = self.possible_indices()
+        if not self.promotion_choice:
+            # Returns possible moves
+            forward_square_list, capture_square_list = self.possible_indices()
 
-        # Forward movement
-        moves.extend(self.forward_moves(game_state, forward_square_list))
+            # Forward movement
+            moves.extend(self.forward_moves(game_state, forward_square_list))
 
-        # Captures
-        moves.extend(self.capture_moves(game_state, capture_square_list))
+            # Captures
+            moves.extend(self.capture_moves(game_state, capture_square_list))
+            
+            self.possible_moves =  moves
+            
+        else:
+            if self.promotion_choice == 'Q':
+                queen.Queen.update_movement_attributes(self, game_state)
+            elif self.promotion_choice == 'B':
+                bishop.Bishop.update_movement_attributes(self, game_state)
+            elif self.promotion_choice == 'N':
+                knight.Knight.update_movement_attributes(self, game_state)
+            elif self.promotion_choice == 'R':
+                rook.Rook.update_movement_attributes(self, game_state)
         
-        self.possible_moves =  moves
-
+    def promote_pawn(self, promotion_choice):
+        self.promotion_choice = promotion_choice
+        if promotion_choice == 'Q':
+            self.notation = 'Q'
+        elif promotion_choice == 'B':
+            self.notation = 'B'
+        elif promotion_choice == 'N':
+            self.notation = 'N'
+        elif promotion_choice == 'R':
+            self.notation = 'R'
+            
+    def undo_pawn_promotion(self):
+        self.promotion_choice = None
+        self.notation = 'P'
+            
+    def move(self, new_index):
+        """Move piece to new_index"""
+        super().move(new_index)
+        
+        if self.promotion_choice:
+            self.promoted_move_count += 1
+        
+        if new_index in constants.FIRST_RANK_INDEXES or new_index in constants.EIGHT_RANK_INDEXES:
+            self.promote_pawn('Q')
+            
+        
+    def undo_last_move(self, old_index):
+        """Move back piece to old_index"""
+        super().undo_last_move(old_index)
+        if self.promotion_choice:
+            if self.promoted_move_count != 0:
+                self.promoted_move_count -= 1        
+            else:
+                self.undo_pawn_promotion()
 
     def possible_indices(self):
         """Returns two lists containing possible target indexes for piece
@@ -67,7 +122,8 @@ class Pawn(piece.Piece):
                     capture_square_list.append(self.index - 7)
 
         forward_max = 1
-        if not self.has_moved():
+        player_pawn_rank = constants.SECOND_RANK_INDEXES if self.player == 'w' else constants.SEVENTH_RANK_INDEXES
+        if self.index in player_pawn_rank:
             forward_max = 2
         for i in range(forward_max):
             forward_square = self.index + forward_offset * (i + 1)
@@ -116,3 +172,4 @@ class Pawn(piece.Piece):
         self.attacked_squares = attacked_squares
         self.defended_squares = defended_squares
         return moves
+    

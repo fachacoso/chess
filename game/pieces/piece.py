@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from numpy import square
 import pieces.piece_constants as piece_constants
 
 
@@ -76,10 +75,10 @@ class Piece(ABC):
     black_pieces      = []
 
     def __init__(self, index, player, move_count = 0):
-        self.index      = index
-        self.player     = player
-        self.move_count = move_count
-        self.captured   = False
+        self.index                 = index
+        self.player                = player
+        self.move_count            = move_count
+        self.captured              = False
         
         # Piece movement attributes
         self.possible_moves   = []
@@ -118,6 +117,7 @@ class Piece(ABC):
         """Move piece to new_index"""
         self.index = new_index
         self.move_count += 1
+            
         
     def undo_last_move(self, old_index):
         """Move back piece to old_index"""

@@ -47,7 +47,12 @@ STARTING_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
 
 
 """
-PAWN PROMOTION CONSTANTS
+PAWN CONSTANTS
 """
+# Pawn promotion
 FIRST_RANK_INDEXES = [0, 1, 2, 3, 4, 5, 6, 7]
 EIGHT_RANK_INDEXES = [56, 57, 58, 59, 60, 61, 62, 63]
+
+# Double forward
+SECOND_RANK_INDEXES  = [8, 9, 10, 11, 12, 13, 14, 15]
+SEVENTH_RANK_INDEXES = [48, 49, 50, 51, 52, 53, 54, 55]

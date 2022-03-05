@@ -5,6 +5,7 @@ import util.utils as util
 import util.FEN as FEN_util
 import constants
 import pieces.piece_constants as piece_constants
+import pieces.pawn as pawn
 
   
 class GameState:
@@ -311,7 +312,7 @@ class GameState:
             self.castling = castle_list
 
     def update_halfmove(self, piece, captured_piece):
-        if piece.notation == "P" or captured_piece != None:
+        if isinstance(piece, pawn.Pawn) or captured_piece != None:
             self.halfmove_count = 0
         else:
             self.halfmove_count += 1

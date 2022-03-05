@@ -20,7 +20,7 @@ DARK = (108, 82, 59)
 def main():
     pygame.init()
     load_pieces()
-    game = game_state.GameState('r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQkq - 0 1')
+    game = game_state.GameState('4k3/P7/8/8/8/8/8/4K3 w - - 0 1')
     old = repr(game)
 
     # Game loop

@@ -75,6 +75,19 @@ class TestPGN:
         # ASSERT
         assert '$' in str(test_state.move_history[0])
         
+    def test_pawn_promotion_move(self, tear_down):
+        # ARRANGE
+        test_fen   = '7k/8/5K2/6Q1/8/8/8/8 w - - 0 1'
+        test_state = game_state.GameState(test_fen)
+        
+        # ACT
+        test_state.make_move('a7', 'a8')
+        
+        # ASSERT
+        actual   = str(test_state.move_history[0])
+        expected = 'a8=Q+'
+        assert actual == expected
+        
 class TestParseMoveFromPGN:
     def test_pawn_move(self, tear_down):
         # ARRANGE
@@ -131,8 +144,8 @@ class TestParseMoveFromPGN:
         
     def test_promotion_move(self, tear_down):
         # ARRANGE
-        test_FEN   = 'xxx'
-        pgn_string = 'xxx'
+        test_FEN   = '4k3/P7/8/8/8/8/8/4K3 w - - 0 1'
+        pgn_string = 'a8=Q+'
         test_state = game_state.GameState(test_FEN)
         
         # ACT
