@@ -11,7 +11,7 @@ from tests.testing_constants import *
 
 import util.PGN as PGN_util
 
-class TestPGN:
+class TestDisplayPGN:
         
     def test_capture_piece_with_knight_both_attacking(self, tear_down):
         # ARRANGE
@@ -38,6 +38,19 @@ class TestPGN:
         assert expected == actual
         
         
+    def test_same_column(self, tear_down):
+        # ARRANGE
+        test_FEN   = '4k3/P7/8/Q7/8/8/8/4K3 w - - 0 1'
+        test_state = game_state.GameState(test_FEN)
+        PGN_util.PGN.load_moves_from_PGN(test_state, "1. a8=Q+ Ke7")
+        
+        # ACT
+        test_state.make_move('a8', 'a7')
+        
+        # ASSERT
+        expected = 'Q8a7+'
+        actual   = str(test_state.move_history[-1])
+        assert expected == actual
         
     def test_check(self, tear_down):
         # ARRANGE
@@ -77,7 +90,7 @@ class TestPGN:
         
     def test_pawn_promotion_move(self, tear_down):
         # ARRANGE
-        test_fen   = '7k/8/5K2/6Q1/8/8/8/8 w - - 0 1'
+        test_fen   = '4k3/P7/8/8/8/8/8/4K3 w - - 0 1'
         test_state = game_state.GameState(test_fen)
         
         # ACT
@@ -87,6 +100,31 @@ class TestPGN:
         actual   = str(test_state.move_history[0])
         expected = 'a8=Q+'
         assert actual == expected
+        
+    def test_castle_bK(self, tear_down):
+        # ARRANGE
+        test_FEN   = 'r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R b KQkq - 0 1'
+        test_state = game_state.GameState(test_FEN)
+        
+        # ACT
+        test_state.make_move('e8', 'g8')
+        
+        # ASSERT
+        actual   = str(test_state.move_history[0])
+        expected = 'O-O'
+        assert expected == actual
+        
+    def test_castle_wQ(self, tear_down):
+        # ARRANGE
+        test_FEN   = 'r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQkq - 0 1'
+        test_state = game_state.GameState(test_FEN)
+        
+        # ACT
+        test_state.make_move('e1', 'c1')
+        
+        actual   = str(test_state.move_history[0])
+        expected = 'O-O-O'
+        assert expected == actual
         
 class TestParseMoveFromPGN:
     def test_pawn_move(self, tear_down):
@@ -152,7 +190,7 @@ class TestParseMoveFromPGN:
         PGN_util.PGN.move_from_PGN(test_state, pgn_string)
         
         # ASSERT
-        expected = 'xxx'
+        expected = 'Q3k3/8/8/8/8/8/8/4K3 b - - 0 1'
         actual   = repr(test_state)
         assert expected == actual
         

@@ -1,37 +1,56 @@
 import util.utils as util
 import pieces.piece as piece
 import pieces.piece_constants as piece_constants
+import pieces.pawn as pawn
 import regex as re
 
 
 class PGN:
     @classmethod    
     def create_PGN_string(cls, move_object):
-        # ! CASTLING 
-        castling = ''
-        castling_bool = False
-        if castling_bool:
-            #if queen side castle
-            return 'O-O'
-            #if king side castle
-            return 'O-O-O'
-        
         moving_piece = move_object.piece
+        
+        # CASTLING 
+        if moving_piece.notation == 'K':
+            distance = move_object.end - move_object.start
+            if abs(distance) == 2:
+                if distance > 0:
+                    return 'O-O'
+                else:
+                    return 'O-O-O'
+            
         current_player_pieces = piece.Piece.white_pieces if moving_piece.player == 'w' else piece.Piece.black_pieces
         
         # PIECE NOTATION
         notation = move_object.piece.notation
-        if notation == 'P':
+        if isinstance(moving_piece, pawn.Pawn) and (moving_piece.notation == 'P' or moving_piece.promoted_move_count == 0):
             notation = ''
         else:
             # IF MULTIPLE PIECES OF SAME TYPE CAN GO TO END, SPECIFY COLUMN OF PIECE
             legal_moves = move_object.non_FEN_attributes['legal_moves']
+            
+            same_legal_move  = False
+            same_column      = False
+            same_rank        = False
+            coordinate       = util.index_to_coordinate(move_object.start)
             for other_piece in current_player_pieces:
+                other_coordinate = util.index_to_coordinate(other_piece.index)
                 # Get all other pieces of same type
                 if other_piece != moving_piece and other_piece.notation == notation:
                     if other_piece.index in legal_moves:
                         if move_object.end in legal_moves[other_piece.index]:
-                           notation  += util.index_to_coordinate(move_object.start)[0]
+                            same_legal_move  = True
+                            if coordinate[0] == other_coordinate[0]:
+                                same_column = True
+                            if coordinate[1] == other_coordinate[1]:
+                                same_rank = True
+            if same_legal_move:
+                if same_rank:
+                    notation += coordinate[0]
+                if same_column:
+                    notation += coordinate[1]
+                if not same_rank and not same_column:
+                    notation += coordinate[0]
 
             
         # CAPTURE
@@ -44,6 +63,11 @@ class PGN:
         # END COORDINATE
         coordinate = util.index_to_coordinate(move_object.end)
         
+        # PAWN PROMOTION
+        promotion = ''
+        if isinstance(moving_piece, pawn.Pawn) and moving_piece.promotion_choice and moving_piece.promoted_move_count == 0:
+            promotion = '=' + moving_piece.notation
+            
         # CHECK
         check     = ''
         if not move_object.game_over:
@@ -66,7 +90,7 @@ class PGN:
             # ! implemenet 1-0 for white wins, 0-1 for black, and 1/2-1/2 for a draw.
                 
                     
-        return notation + capture + coordinate + check + game_over
+        return notation + capture + coordinate + promotion + check + game_over
     
     @classmethod
     def load_moves_from_PGN(cls, game_state, PGN_string):
