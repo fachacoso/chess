@@ -2,6 +2,8 @@ import pygame
 import numpy
 import game_state
 import constants
+import util.PGN as PGN_util
+import tests.example_games as example_games
 
 BOARD_SIZE = 1000
 SQUARE_SIZE = BOARD_SIZE // 8
@@ -16,6 +18,38 @@ def test_main():
 LIGHT = (145, 130, 109)
 DARK = (108, 82, 59)
 
+
+def test_main_from_PGN():
+    load_pieces()
+    game = game_state.GameState()
+    old = repr(game)
+    PGN_string = example_games.PGN_7
+    PGN_util.load_moves_from_PGN(game)
+
+    # Game loop
+    selected_index = None
+    run = True
+    while run:
+        if old != repr(game):
+            old = repr(game)
+        
+        for e in pygame.event.get():
+            # Quits game
+            if e.type == pygame.QUIT:
+                run = False
+            # Mouse listening                
+            if e.type == pygame.K_LEFT:
+                game.undo_move()
+
+
+        # Updates each frame
+        update_view(game, selected_index, 0)
+        pygame.display.update()
+
+
+    pygame.display.quit()
+    pygame.quit()
+    exit()
 
 def main():
     pygame.init()

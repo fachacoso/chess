@@ -106,6 +106,7 @@ class PGN:
             game_state (GameState()): current game state
             PGN_string (string): PGN notation of all moves
         """
+        PGN_string = re.sub(r'\[.+\]', "", PGN_string) # Remove tag roster
         PGN_string = re.sub(r"{(.*?)}", "", PGN_string) # Remove annotations
         PGN_string = re.sub(r"\(.*?\)", "", PGN_string) # Remove branching moves
         PGN_string = re.sub(r"[0-9]+\.+", "", PGN_string) # Remove number
@@ -125,22 +126,22 @@ class PGN:
         current_player_pieces   = piece.Piece.white_pieces if game_state.turn == 'w' else piece.Piece.black_pieces
         
         # CASTLE
-        if PGN_move_string == 'O-O':
+        if 'O-O-O' in PGN_move_string:
             if game_state.turn == 'w':
                 start_index = piece_constants.WHITE_KING_INDEX
-                end_index = start_index + 2
+                end_index = start_index - 2
             else:
                 start_index = piece_constants.BLACK_KING_INDEX
-                end_index = start_index + 2
+                end_index = start_index - 2
             game_state.make_move(start_index, end_index)
             return
-        elif PGN_move_string == 'O-O-O':
+        if 'O-O' in PGN_move_string:
             if game_state.turn == 'w':
                 start_index = piece_constants.WHITE_KING_INDEX
-                end_index = start_index - 2
+                end_index = start_index + 2
             else:
                 start_index = piece_constants.BLACK_KING_INDEX
-                end_index = start_index - 2
+                end_index = start_index + 2
             game_state.make_move(start_index, end_index)
             return
         
@@ -171,6 +172,9 @@ class PGN:
                 possible_rank   = possible_rank.group()
                 possible_pieces = [piece for piece in possible_pieces if util.index_to_coordinate(piece.index)[1] == possible_rank]
         
+        # FILTER CAPTURED PIECES
+        possible_pieces = [piece for piece in possible_pieces if not piece.captured]
+        
         # FILTER LEGAL MOVES
         legal_moves = game_state.legal_moves
         for possible_piece in possible_pieces:
@@ -178,7 +182,9 @@ class PGN:
                 if end_index in legal_moves[possible_piece.index]:
                     start_index = possible_piece.index
                     break
-        game_state.make_move(start_index, end_index)
+                
+        move_successful = game_state.make_move(start_index, end_index)
+        assert move_successful
         
         
     @classmethod    
