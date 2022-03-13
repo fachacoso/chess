@@ -1,0 +1,158 @@
+/*------------------------------------*\
+  General
+\*------------------------------------*/
+html {
+    background: linear-gradient(#23201b 0%, #0f1011 13%);
+    height: 100%;
+    font-family: 'Palanquin', sans-serif;
+    color: #d7d8ce;
+}
+
+body {
+    margin-top: 0px; 
+    font-size: 18px;
+}
+/*------------------------------------*\
+  Navbar
+\*------------------------------------*/
+#navbar {
+    display: flex;
+    flex-direction: row;
+    margin: auto;
+    width: 98%;
+    justify-content: center;
+    align-items: center;
+}
+#logo {
+    font-size: 42px;
+}
+#nav-items {
+    font-family: 'Encode Sans Condensed', sans-serif;
+    text-decoration: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#nav-items a {
+    margin-left: 24px;
+    letter-spacing: .05rem;
+}
+#profile-items {
+    margin-left: auto;
+    font-size: 24px;
+}
+a {
+    text-decoration: none;
+    color: inherit;
+}
+/*------------------------------------*\
+  Main
+\*------------------------------------*/
+#main {
+    margin: auto;
+    width: 85%;
+    height: 80vh;
+    display: flex;
+    flex-direction: row;
+}
+#info {
+    background-color: #1b1d1e;
+    color: #5f727b;
+    width: 20%;
+    height: 20%;
+}
+
+#app {
+    width: 75%;
+    display: flex;
+    flex-direction: row;
+    margin-left: 16px;
+}
+#sidebar-container  {
+    display: flex;
+    width: 30%;
+    justify-content: center;
+    flex-direction: column;
+}
+#sidebar {
+    background-color: #1b1d1e;
+    height: 50%;
+    width: 100%;
+    margin-left: 0px;
+}
+/*------------------------------------*\
+  Chessboard
+\*------------------------------------*/
+#chessboard-container {
+    display: grid;
+    grid-template-columns: 95% 5%;
+    grid-template-rows: 95% 5%;
+    
+    width: 80vh;
+    font-size: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
+} 
+#chessboard {
+    grid-column: 1;
+    grid-row: 1;
+    display: flex;
+    flex-direction: column-reverse;
+}
+#chessboard .black-playing{
+    transform: rotate(180);
+}
+.row {
+    height: 12.5%;
+    width : 100%;
+    display: flex;
+    flex-direction: row;
+}
+.square {
+    height: 100%;
+    width : 12.5%;
+}
+.light {
+    background-color: #93846c;
+}
+.dark {
+    background-color: #6c543c;
+}
+#ranks {
+    grid-column: 2;
+    grid-row: 1;
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    margin: 0px;
+    margin-left: 2px;
+}
+
+#columns{
+    grid-column: 1;
+    grid-row: 2;
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin: 0px;
+    margin-top: 2px;
+}
+
+#pieces-overlay {
+    position: absolute;
+    width: calc(80vh * .95);
+    height: calc(80vh * .95);
+}
+
+img {
+    height: calc(80vh * .95 * (1/8));
+    width: calc(80vh * .95 * (1/8));
+}
+
+#pieces-overlay img {
+    position: absolute;
+}
