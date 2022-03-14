@@ -25,10 +25,9 @@ IMAGES = {}
 pieces = ['bP', 'bR', 'bN', 'bK', 'bB', 'bQ', 'bK', 'wP', 'wR', 'wN', 'wK', 'wB', 'wQ', 'wK']
     for (var i = 0; i < pieces.length; i++) {
         piece = pieces[i];
-        src = "images/" + piece + ".png";
+        src = "/static/images/" + piece + ".png";
         IMAGES[piece] = src
     }
-// draw pieces
 
 pieces_overlay = document.getElementById('pieces-overlay')
 

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<style src ='style.css'></style>
+<html>	
+    <head>
+        <title>notlichess - Free Offline Chess</title>
+        <link rel="stylesheet" type="text/css" href="/static/style.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Encode+Sans+Condensed&family=Palanquin&display=swap" rel="stylesheet">
+    </head>
+        <div id='navbar'>
+            <div id='logo'>
+                lichess.org
+            </div>
+            <div id='nav-items'> 
+                <a href="#play">PLAY</a>
+                <a href="#puzzles">PUZZLES</a>
+                <a href="#learn">LEARN</a>
+                <a href="#watch">WATCH</a>
+                <a href="#community">COMMUNITY</a>
+                <a href="#tools">TOOLS</a>
+            </div>
+            <div id='profile-items'>
+                <a href="#search"></a>
+                <a href="#challenge"></a>
+                <a href="#notifications"></a>
+                <a href="#profile">account_name_here</a>
+            </div>
+        </div>
+        <form method='POST' action="/game">
+            <div class='FEN-form'>
+                <label> Starting position</label>
+                <input name='FEN'>
+            </div>
+            <input id='from-submit' type='submit' value='Start game'>
+        </form>
+    </body>
+
+    
+<script src='/static/script.js'></script>
+</html>
