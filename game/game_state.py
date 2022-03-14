@@ -6,6 +6,7 @@ import util.FEN as FEN_util
 import constants
 import pieces.piece_constants as piece_constants
 import pieces.pawn as pawn
+import pieces.piece
 
   
 class GameState:
@@ -80,6 +81,8 @@ class GameState:
         updates instance attributes
     '''
     def __init__(self, FEN_string = constants.STARTING_FEN):
+        pieces.piece.Piece.reset_pieces()
+        
         # Initializes starting board using FEN notation string
         current_FEN = FEN_util.FEN(FEN_string)
         current_FEN.load_FEN_string(self)
@@ -343,17 +346,10 @@ class GameState:
     def __str__(self):
         # ! unicode errors
         string = ""
-        stack = []
-        for rank in range(constants.RANK):
-            current_rank = []
-            for file in range(constants.FILE):
-                index = util.xy_to_index(file, rank)
-                current_rank.append(self.get_square(index).__str__())
-            stack.append(current_rank)
-        for _ in range(constants.RANK):
-            string += " ".join(stack.pop())
-            string += "\n"
-        return string
+        for square in self.board:
+            string += str(square)
+            string += ' '
+        return string[:-1]
 
     # FEN notation
     def __repr__(self):

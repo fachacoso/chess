@@ -1,6 +1,13 @@
 /*------------------------------------*\
   General
 \*------------------------------------*/
+:root {
+    --primary-font-color: #010101;
+    --secondary-font-color: ;
+    --dark-color: #1b1d1e;
+    --medium-color: ;
+  }
+
 html {
     background: linear-gradient(#23201b 0%, #0f1011 13%);
     height: 100%;
@@ -9,7 +16,7 @@ html {
 }
 
 body {
-    margin-top: 0px; 
+    margin-top: 0px;    
     font-size: 18px;
 }
 /*------------------------------------*\
@@ -45,6 +52,25 @@ a {
     text-decoration: none;
     color: inherit;
 }
+form {
+    background-color: var(--dark-color);
+    width: 50%;
+    height: 30vh;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 50px;
+    }
+#FEN-form {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+label {
+    margin-bottom: 10px;
+}
 /*------------------------------------*\
   Main
 \*------------------------------------*/
@@ -56,8 +82,7 @@ a {
     flex-direction: row;
 }
 #info {
-    background-color: #1b1d1e;
-    color: #5f727b;
+    background-color: var(--dark-color);
     width: 20%;
     height: 20%;
 }
@@ -75,7 +100,7 @@ a {
     flex-direction: column;
 }
 #sidebar {
-    background-color: #1b1d1e;
+    background-color: var(--dark-color);
     height: 50%;
     width: 100%;
     margin-left: 0px;

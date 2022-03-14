@@ -31,19 +31,22 @@ pieces = ['bP', 'bR', 'bN', 'bK', 'bB', 'bQ', 'bK', 'wP', 'wR', 'wN', 'wK', 'wB'
 
 pieces_overlay = document.getElementById('pieces-overlay')
 
-function create_piece(notation, index) {
-    piece = document.createElement('img')
-    piece.src = IMAGES[notation]
-
-    pieces_overlay.appendChild(piece)
-
-    set_piece(piece, index)
-}
-function set_piece(piece, index) {
-    square = board[index].getBoundingClientRect();
+function set_piece(piece) {
+    piece.src = IMAGES[piece.dataset.notation]
+    square    = board[piece.dataset.index].getBoundingClientRect();
 
     piece.style.left = square.left - pieces_overlay.offsetLeft + 'px';
     piece.style.top  = square.top - pieces_overlay.offsetTop + 'px';
 }
-create_piece('wR', 2)
-create_piece('wR', 3)
+
+function move_piece(piece, index) {
+    square    = board[index].getBoundingClientRect();
+
+    piece.style.left = square.left - pieces_overlay.offsetLeft + 'px';
+    piece.style.top  = square.top - pieces_overlay.offsetTop + 'px';
+}
+pieces = pieces_overlay.getElementsByTagName("img")
+for (var i = 0; i < pieces.length; i++){
+    set_piece(pieces[i])
+    console.log(1)
+}

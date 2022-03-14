@@ -81,7 +81,7 @@ class Square:
     # Unicode representation
     def __str__(self):
         if self.is_empty():
-            return '-'
+            return '--'
         else:
             return self.get_piece().__str__()
     

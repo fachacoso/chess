@@ -158,7 +158,7 @@ class Piece(ABC):
     """
     # Unicode representation
     def __str__(self):
-        return piece_constants.UNICODE_SYMBOLS[self.player + self.notation]
+        return self.player + self.notation
 
     # FEN notation
     def __repr__(self):

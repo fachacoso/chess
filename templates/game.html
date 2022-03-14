@@ -35,7 +35,14 @@
             <div id='app'>
                 <div id='chessboard-container'>
                     <div id='chessboard'></div>
-                    <div id='pieces-overlay'></div>
+                    <div id='pieces-overlay'>
+                        {% for square in board_pos %}
+                            {% if square != '--' %}
+                                <img data-notation = {{square}} data-index = {{loop.index0}}> 
+                            {% endif %}
+                        {% endfor %}
+
+                    </div>
                     <ul id='ranks'>
                         <li>8</li>
                         <li>7</li>
