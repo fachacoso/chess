@@ -1,7 +1,9 @@
 from flask import Flask, render_template, request
 import os, sys
-import game.tryimport as tryimport
 
+path = '/game'
+sys.path.append(os.path.join(os.getcwd(), 'game'))
+import game.tryimport as tryimport
 app = Flask(__name__)
 
 @app.route("/", methods=['GET', 'POST'])
