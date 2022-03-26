@@ -1,6 +1,3 @@
-**Table of Contents**
-
-[TOC]
 #Chess [ONGOING]
 Chess program using python for backend and javascript for fronend.  
 Front-end design inspired by lichess.org.
