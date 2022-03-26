@@ -1,9 +1,9 @@
-#Chess [ONGOING]
-Chess program using python for backend and javascript for fronend.  
+# Chess [ONGOING]
+Chess program written in Python for backend and Javascript for frontend.  
 Front-end design inspired by lichess.org.
 
 # Features
-##Base Game
+## Base Game
 Game supports all functionalities of chess including basic movement, checks, endgames,
 and even special rules including:
 - [Castling](https://simple.wikipedia.org/wiki/Castling#:~:text=Castling%20is%20a%20special%20move,where%20the%20king%20has%20moved. "Castling")
@@ -35,13 +35,13 @@ Example 2:
 
 More information on PGN notation can be found [here](https://en.wikipedia.org/wiki/Portable_Game_Notation "here")
 
-##AI
+## AI
 Computer has multiple difficulties using algorithms.
 - Random move
 - Min-Max (varying depths)
 - Alpha-beta pruning
 
-#Technologies Used
+# Technologies Used
 - **Flask** - Connect Python frontend and Javascript backend
 - **Pytest** - Used to test piece functionality and PGN/FEN text parsing
 - **Pygame** - Used to prototype game before switching to web application
@@ -51,7 +51,7 @@ Computer has multiple difficulties using algorithms.
 - Databases - Use a server to hold state of game opening possibilities of data analysis and remote play
 
 
-#Why Code Chess?
+# Why Code Chess?
 As a new college graduate, I wanted to create a fairly large enough project that was not
 some class project I needed to do for a grade. I had learned lots in college and gained
 confidence in many skills: data analytics, Al, web development, game development,
@@ -61,4 +61,4 @@ I recently got into chess after learning how easy it was play against people onl
 Around this time I was trying to figure out the afforementioned idea of combining, and
 realized that my new found hobby was a possible solution.
 
-If you're curious to see my chess journey, check out my lichess.org containing [here](https://lichess.org/@/laidbacknerd "here") containing my history, rank, and some of the many games I used to help out with testing.
+If you're curious to see my chess journey, check out my lichess.org [here](https://lichess.org/@/laidbacknerd "here") containing my history, rank, and some of the many games I used to help out with testing.
